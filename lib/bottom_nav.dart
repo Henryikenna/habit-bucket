@@ -1,10 +1,57 @@
-import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:habit_bucket/models/bottom_nav_widget_model.dart';
-import 'package:habit_bucket/screens/habits/habits_screen.dart';
-import 'package:habit_bucket/screens/stats/stats_screen.dart';
-import 'package:habit_bucket/utils/colors.dart';
-import 'package:habit_bucket/utils/opacity.dart';
+// import 'package:flutter/material.dart';
+// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+// import 'package:habit_bucket/models/bottom_nav_widget_model.dart';
+// import 'package:habit_bucket/screens/habits/habits_screen.dart';
+// import 'package:habit_bucket/screens/stats/stats_screen.dart';
+// import 'package:habit_bucket/utils/colors.dart';
+// import 'package:habit_bucket/utils/opacity.dart';
+
+// // class BottomNav extends StatefulWidget {
+// //   const BottomNav({super.key});
+
+// //   @override
+// //   State<BottomNav> createState() => _BottomNavState();
+// // }
+
+// // class _BottomNavState extends State<BottomNav> {
+// //   int currentIndex = 0;
+
+// //   List<BottomNavWidgetModel> widgetsList = [
+// //     BottomNavWidgetModel(
+// //       name: "Habits",
+// //       icon: FaIcon(FontAwesomeIcons.listCheck),
+// //       widget: HabitsScreen(),
+// //     ),
+// //     BottomNavWidgetModel(
+// //       name: "Stats",
+// //       icon: FaIcon(FontAwesomeIcons.chartLine),
+// //       widget: Container(),
+// //     ),
+// //     BottomNavWidgetModel(
+// //       name: "Settings",
+// //       icon: FaIcon(FontAwesomeIcons.gear),
+// //       widget: Container(),
+// //     ),
+// //   ];
+
+// //   @override
+// //   Widget build(BuildContext context) {
+// //     List<Widget> screens = widgetsList.map((e) => e.widget).toList();
+
+// //     return Scaffold(
+// //       backgroundColor: HabitBucketColors.lightGray,
+// //       body: screens[currentIndex],
+// //       bottomNavigationBar: BottomNavigationBar(
+// //         onTap: (value) => setState(() {
+// //           currentIndex = value;
+// //         }),
+// //         items: widgetsList
+// //             .map((e) => BottomNavigationBarItem(icon: e.icon, label: e.name))
+// //             .toList(),
+// //       ),
+// //     );
+// //   }
+// // }
 
 // class BottomNav extends StatefulWidget {
 //   const BottomNav({super.key});
@@ -16,7 +63,7 @@ import 'package:habit_bucket/utils/opacity.dart';
 // class _BottomNavState extends State<BottomNav> {
 //   int currentIndex = 0;
 
-//   List<BottomNavWidgetModel> widgetsList = [
+//   final List<BottomNavWidgetModel> widgetsList = const [
 //     BottomNavWidgetModel(
 //       name: "Habits",
 //       icon: FaIcon(FontAwesomeIcons.listCheck),
@@ -25,36 +72,74 @@ import 'package:habit_bucket/utils/opacity.dart';
 //     BottomNavWidgetModel(
 //       name: "Stats",
 //       icon: FaIcon(FontAwesomeIcons.chartLine),
-//       widget: Container(),
+//       widget: StatsScreen(),
 //     ),
 //     BottomNavWidgetModel(
 //       name: "Settings",
 //       icon: FaIcon(FontAwesomeIcons.gear),
-//       widget: Container(),
+//       widget: SizedBox(),
 //     ),
 //   ];
 
 //   @override
 //   Widget build(BuildContext context) {
-//     List<Widget> screens = widgetsList.map((e) => e.widget).toList();
-
 //     return Scaffold(
+//       extendBody: false,
 //       backgroundColor: HabitBucketColors.lightGray,
-//       body: screens[currentIndex],
-//       bottomNavigationBar: BottomNavigationBar(
-//         onTap: (value) => setState(() {
-//           currentIndex = value;
-//         }),
-//         items: widgetsList
-//             .map((e) => BottomNavigationBarItem(icon: e.icon, label: e.name))
-//             .toList(),
+//       body: widgetsList[currentIndex].widget,
+//       bottomNavigationBar: Container(
+//         padding: EdgeInsets.symmetric(vertical: 8),
+//         decoration: BoxDecoration(
+//           color: Colors.white,
+//           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+//           boxShadow: [
+//             BoxShadow(
+//               color: HabitBucketColors.black.withOpacityFactor(0.06),
+//               blurRadius: 20,
+//               offset: const Offset(0, -4),
+//             ),
+//           ],
+//         ),
+//         child: BottomNavigationBar(
+//           currentIndex: currentIndex,
+//           onTap: (index) => setState(() => currentIndex = index),
+//           backgroundColor: Colors.transparent,
+//           elevation: 0,
+//           type: BottomNavigationBarType.fixed,
+//           selectedItemColor: HabitBucketColors.mainPurple,
+//           unselectedItemColor: Colors.grey.shade400,
+//           selectedFontSize: 12,
+//           unselectedFontSize: 12,
+//           items: widgetsList
+//               .map(
+//                 (e) => BottomNavigationBarItem(
+//                   icon: Padding(
+//                     padding: const EdgeInsets.only(bottom: 4),
+//                     child: e.icon,
+//                   ),
+//                   label: e.name,
+//                 ),
+//               )
+//               .toList(),
+//         ),
 //       ),
 //     );
 //   }
 // }
 
+import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:habit_bucket/models/bottom_nav_widget_model.dart';
+import 'package:habit_bucket/screens/habits/habits_screen.dart';
+import 'package:habit_bucket/screens/settings/settings_screen.dart';
+import 'package:habit_bucket/screens/stats/stats_screen.dart';
+import 'package:habit_bucket/theme/theme_controller.dart';
+import 'package:habit_bucket/utils/opacity.dart';
+
 class BottomNav extends StatefulWidget {
-  const BottomNav({super.key});
+  final ThemeController themeController;
+
+  const BottomNav({super.key, required this.themeController});
 
   @override
   State<BottomNav> createState() => _BottomNavState();
@@ -63,51 +148,81 @@ class BottomNav extends StatefulWidget {
 class _BottomNavState extends State<BottomNav> {
   int currentIndex = 0;
 
-  final List<BottomNavWidgetModel> widgetsList = const [
-    BottomNavWidgetModel(
-      name: "Habits",
-      icon: FaIcon(FontAwesomeIcons.listCheck),
-      widget: HabitsScreen(),
-    ),
-    BottomNavWidgetModel(
-      name: "Stats",
-      icon: FaIcon(FontAwesomeIcons.chartLine),
-      widget: StatsScreen(),
-    ),
-    BottomNavWidgetModel(
-      name: "Settings",
-      icon: FaIcon(FontAwesomeIcons.gear),
-      widget: SizedBox(),
-    ),
-  ];
+  late final List<BottomNavWidgetModel> widgetsList;
+
+  @override
+  void initState() {
+    super.initState();
+
+    widgetsList = [
+      const BottomNavWidgetModel(
+        name: "Habits",
+        icon: FaIcon(FontAwesomeIcons.listCheck),
+        widget: HabitsScreen(),
+      ),
+      const BottomNavWidgetModel(
+        name: "Stats",
+        icon: FaIcon(FontAwesomeIcons.chartLine),
+        widget: StatsScreen(),
+      ),
+      BottomNavWidgetModel(
+        name: "Settings",
+        icon: const FaIcon(FontAwesomeIcons.gear),
+        widget: SettingsScreen(themeController: widget.themeController),
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
+    // final surface = Theme.of(context).colorScheme.surface;
+
     return Scaffold(
+      // backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      // body: widgetsList[currentIndex].widget,
+      // bottomNavigationBar: Container(
+      //   padding: const EdgeInsets.symmetric(vertical: 8),
+      //   decoration: BoxDecoration(
+      //     color: surface,
+      //     borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      //     boxShadow: [
+      //       BoxShadow(
+      //         color: Colors.black.withOpacityFactor(0.06),
+      //         blurRadius: 20,
+      //         offset: const Offset(0, -4),
+      //       ),
+      //     ],
+      //   ),
+
       extendBody: false,
-      backgroundColor: HabitBucketColors.lightGray,
-      body: widgetsList[currentIndex].widget,
-      bottomNavigationBar: Container(
-        padding: EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          boxShadow: [
-            BoxShadow(
-              color: HabitBucketColors.black.withOpacityFactor(0.06),
-              blurRadius: 20,
-              offset: const Offset(0, -4),
-            ),
-          ],
+  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+  body: widgetsList[currentIndex].widget,
+  bottomNavigationBar: Container(
+    padding: const EdgeInsets.symmetric(vertical: 8),
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.surface,
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacityFactor(
+            Theme.of(context).brightness == Brightness.dark ? 0.18 : 0.06,
+          ),
+          blurRadius: 20,
+          offset: const Offset(0, -4),
         ),
+      ],
+    ),
         child: BottomNavigationBar(
           currentIndex: currentIndex,
           onTap: (index) => setState(() => currentIndex = index),
           backgroundColor: Colors.transparent,
           elevation: 0,
           type: BottomNavigationBarType.fixed,
-          selectedItemColor: HabitBucketColors.mainPurple,
-          unselectedItemColor: Colors.grey.shade400,
+          // selectedItemColor: Theme.of(context).colorScheme.primary,
+          // unselectedItemColor: Colors.grey.shade400,
+          selectedItemColor: Theme.of(context).colorScheme.primary,
+      unselectedItemColor: Theme.of(context).colorScheme.onSurface.withOpacityFactor(0.45),
+     
           selectedFontSize: 12,
           unselectedFontSize: 12,
           items: widgetsList

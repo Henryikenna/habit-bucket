@@ -94,7 +94,7 @@ class _HabitsScreenState extends State<HabitsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: HabitBucketColors.lightGray,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,6 +108,7 @@ class _HabitsScreenState extends State<HabitsScreen>
                   fontSize: 36,
                   fontWeight: FontWeight.w500,
                   height: 1.15,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ),
@@ -161,7 +162,7 @@ class _HabitsScreenState extends State<HabitsScreen>
                     margin: EdgeInsets.all(0),
                     decoration: BoxDecoration(
                       border: Border(
-                        right: BorderSide(color: HabitBucketColors.borderBlack),
+                        right: BorderSide(color:  Theme.of(context).colorScheme.onSurface),
                       ),
                     ),
                     child: Column(
@@ -192,7 +193,13 @@ class _HabitsScreenState extends State<HabitsScreen>
                                     size: 24,
                                     color: currentViewIndex == 0
                                         ? HabitBucketColors.lightGray
-                                        : HabitBucketColors.black,
+                                        // : Theme.of(context).brightness ==
+                                        //       Brightness.light
+                                        // ? HabitBucketColors.black
+                                        // : HabitBucketColors.lightGray,
+                                        : Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface,
                                   ),
                                   currentViewIndex == 0
                                       ? SizedBox()
@@ -210,7 +217,10 @@ class _HabitsScreenState extends State<HabitsScreen>
                                               // color: currentViewIndex == 0
                                               //     ? HabitBucketColors.lightGray
                                               //     : HabitBucketColors.black,
-                                              color: HabitBucketColors.black,
+                                              // color: HabitBucketColors.black,
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.onSurface,
                                             ),
                                           ),
                                         ),
@@ -251,7 +261,13 @@ class _HabitsScreenState extends State<HabitsScreen>
                                     size: 24,
                                     color: currentViewIndex == 1
                                         ? HabitBucketColors.lightGray
-                                        : HabitBucketColors.black,
+                                        // : Theme.of(context).brightness ==
+                                        //       Brightness.light
+                                        // ? HabitBucketColors.black
+                                        // : HabitBucketColors.lightGray,
+                                        : Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface,
                                   ),
                                   currentViewIndex == 1
                                       ? SizedBox()
@@ -268,7 +284,9 @@ class _HabitsScreenState extends State<HabitsScreen>
                                               // color: currentViewIndex == 1
                                               //     ? HabitBucketColors.lightGray
                                               //     : HabitBucketColors.black,
-                                              color: HabitBucketColors.black,
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.onSurface,
                                             ),
                                           ),
                                         ),
@@ -302,7 +320,13 @@ class _HabitsScreenState extends State<HabitsScreen>
                                     size: 24,
                                     color: currentViewIndex == 2
                                         ? HabitBucketColors.lightGray
-                                        : HabitBucketColors.black,
+                                        // : Theme.of(context).brightness ==
+                                        //       Brightness.light
+                                        // ? HabitBucketColors.black
+                                        // : HabitBucketColors.lightGray,
+                                        : Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface,
                                   ),
                                   currentViewIndex == 2
                                       ? SizedBox()
@@ -319,7 +343,9 @@ class _HabitsScreenState extends State<HabitsScreen>
                                               // color: currentViewIndex == 1
                                               //     ? HabitBucketColors.lightGray
                                               //     : HabitBucketColors.black,
-                                              color: HabitBucketColors.black,
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.onSurface,
                                             ),
                                           ),
                                         ),

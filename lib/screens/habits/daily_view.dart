@@ -27,7 +27,7 @@
 //         children: [
 //           Text(
 //             "Daily Habits",
-//             style: TextStyle(fontSize: 18, color: HabitBucketColors.black),
+//             style: TextStyle(fontSize: 18, color:  Theme.of(context).colorScheme.onSurface),
 //           ),
 //           8.spaceH,
 
@@ -57,7 +57,7 @@
 //           //                       "30 pushups a day\ndrink water daily\nvisit my babe",
 //           //                       style: TextStyle(
 //           //                         fontSize: 14,
-//           //                         color: HabitBucketColors.black,
+//           //                         color:  Theme.of(context).colorScheme.onSurface,
 //           //                       ),
 //           //                     ),
 //           //                     2.spaceH,
@@ -340,7 +340,7 @@ class _DailyViewState extends State<DailyView> {
                         "Daily Habits",
                         style: TextStyle(
                           fontSize: 18,
-                          color: HabitBucketColors.black,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
 
@@ -348,30 +348,30 @@ class _DailyViewState extends State<DailyView> {
                       //   "${habitList.length}/10",
                       //   style: TextStyle(
                       // fontSize: 14,
-                      // color: HabitBucketColors.black,
+                      // color:  Theme.of(context).colorScheme.onSurface,
                       //   ),
                       // ),
                       RichText(
                         text: TextSpan(
                           style: TextStyle(
                             fontSize: 14,
-                            color: HabitBucketColors.black,
+                            color:  Theme.of(context).colorScheme.onSurface,
                           ),
                           children: [
                             TextSpan(
                               text: "${habitList.length}",
                               style: TextStyle(
                                 fontSize: 14,
-                                color: HabitBucketColors.black
+                                color:  Theme.of(context).colorScheme.onSurface
                                 .withOpacityFactor(.95),
                               ),
                             ),
                             const TextSpan(text: "/"),
-                            const TextSpan(
+                             TextSpan(
                               text: "10",
                               style: TextStyle(
                                 fontSize: 14,
-                                color: HabitBucketColors.black,
+                                color:  Theme.of(context).colorScheme.onSurface,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),

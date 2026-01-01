@@ -9,7 +9,7 @@ class StatsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: HabitBucketColors.lightGray,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -18,15 +18,13 @@ class StatsScreen extends StatelessWidget {
             children: [
               const Text(
                 "Your Progress",
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 6),
               Text(
                 "Consistency over time",
-                style: TextStyle(color: Colors.grey.shade600),
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacityFactor(0.6)),
+
               ),
               const SizedBox(height: 24),
 
@@ -83,11 +81,11 @@ class StatsScreen extends StatelessWidget {
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
                       "Your 2025 Wrapped",
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -95,7 +93,11 @@ class StatsScreen extends StatelessWidget {
                     SizedBox(height: 6),
                     Text(
                       "Available at the end of the year",
-                      style: TextStyle(color: Colors.white70),
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.surface.withOpacityFactor(.7),
+                      ),
                     ),
                   ],
                 ),
@@ -103,7 +105,8 @@ class StatsScreen extends StatelessWidget {
             ],
           ),
         ),
-      ),   );
+      ),
+    );
   }
 }
 
@@ -115,14 +118,23 @@ class _HighlightCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacityFactor(0.05),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          ),
-        ],
+        color: Theme.of(context).colorScheme.surface,
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.black.withOpacityFactor(0.05),
+        //     blurRadius: 12,
+        //     offset: const Offset(0, 6),
+        //   ),
+        // ],
+        boxShadow: Theme.of(context).brightness == Brightness.dark
+            ? []
+            : [
+                BoxShadow(
+                  color: Colors.black.withOpacityFactor(0.04),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
       ),
       child: Row(
         children: [
@@ -140,21 +152,19 @@ class _HighlightCard extends StatelessWidget {
           const SizedBox(width: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               Text(
                 "You're on a roll",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
               SizedBox(height: 4),
               Text(
                 "Completed all habits today",
-                style: TextStyle(color: Colors.grey),
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacityFactor(0.55)),
+
               ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -178,7 +188,7 @@ class _StatTile extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacityFactor(0.04),
@@ -194,16 +204,11 @@ class _StatTile extends StatelessWidget {
           const Spacer(),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
-          Text(
-            title,
-            style: const TextStyle(color: Colors.grey),
-          ),
+          Text(title, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacityFactor(0.55)),
+),
         ],
       ),
     );

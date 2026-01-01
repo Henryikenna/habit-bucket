@@ -690,7 +690,7 @@ class _CheckOffButtonState extends State<CheckOffButton>
   Widget build(BuildContext context) {
     final primaryColor =
         widget.primaryColor ?? HabitBucketColors.mainPurple;
-    final uncheckedColor = widget.uncheckedColor ?? HabitBucketColors.mediumGray;
+    final uncheckedColor = widget.uncheckedColor ??  Theme.of(context).colorScheme.outline;
 
     return GestureDetector(
       onTap: widget.onTap,

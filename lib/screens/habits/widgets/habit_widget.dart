@@ -47,9 +47,10 @@ class _HabitWidgetState extends State<HabitWidget> {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                 decoration: BoxDecoration(
-                  color: HabitBucketColors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(4),
                 ),
+
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -60,7 +61,7 @@ class _HabitWidgetState extends State<HabitWidget> {
                           widget.title,
                           style: TextStyle(
                             fontSize: 14,
-                            color: HabitBucketColors.black,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                         2.spaceH,
@@ -85,7 +86,7 @@ class _HabitWidgetState extends State<HabitWidget> {
                     height: 28,
                     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      border: Border.all(color: HabitBucketColors.mediumGray),
+                      border: Border.all(color: Theme.of(context).colorScheme.outline),
                       borderRadius: BorderRadius.circular(40),
                       color: Colors.transparent,
                     ),
@@ -96,7 +97,7 @@ class _HabitWidgetState extends State<HabitWidget> {
                         FaIcon(
                           FontAwesomeIcons.bolt,
                           size: 12,
-                          color: HabitBucketColors.borderBlack
+                          color: Theme.of(context).colorScheme.onSurface
                               .withOpacityFactor(.5),
                         ),
                         6.spaceW,
@@ -104,7 +105,7 @@ class _HabitWidgetState extends State<HabitWidget> {
                           "${widget.habitFrequency.name.capitalize()} Habit",
                           style: TextStyle(
                             fontSize: 12,
-                            color: HabitBucketColors.borderBlack
+                            color: Theme.of(context).colorScheme.onSurface
                                 .withOpacityFactor(.5),
                           ),
                         ),
@@ -121,10 +122,10 @@ class _HabitWidgetState extends State<HabitWidget> {
                       border: Border.all(
                         color: widget.isStreakActivated
                             ? HabitBucketColors.pink
-                            : HabitBucketColors.mediumGray,
+                            : Theme.of(context).colorScheme.outline,
                       ),
                       borderRadius: BorderRadius.circular(40),
-                      color: HabitBucketColors.lightGray,
+                      color: Theme.of(context).colorScheme.surface,
                     ),
                     child: Row(
                       // crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,7 +136,7 @@ class _HabitWidgetState extends State<HabitWidget> {
                           size: 12,
                           color: widget.isStreakActivated
                               ? HabitBucketColors.pink
-                              : HabitBucketColors.mediumGray,
+                              : Theme.of(context).colorScheme.outline,
                         ),
                         6.spaceW,
                         Text(
@@ -144,7 +145,7 @@ class _HabitWidgetState extends State<HabitWidget> {
                             fontSize: 12,
                             color: widget.isStreakActivated
                                 ? HabitBucketColors.pink
-                                : HabitBucketColors.mediumGray,
+                                : Theme.of(context).colorScheme.outline,
                           ),
                         ),
                       ],
@@ -164,7 +165,7 @@ class _HabitWidgetState extends State<HabitWidget> {
               topHeight: 0,
               spacing: 32,
               bottomHeight: 0,
-              color: HabitBucketColors.black.withOpacityFactor(.3),
+              color: Theme.of(context).colorScheme.onSurface.withOpacityFactor(.3),
             ),
           ),
         ),

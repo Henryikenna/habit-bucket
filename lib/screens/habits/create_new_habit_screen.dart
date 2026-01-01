@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:habit_bucket/enums/habit_frequency_enum.dart';
 import 'package:habit_bucket/utils/colors.dart';
+import 'package:habit_bucket/utils/opacity.dart';
 import 'package:habit_bucket/utils/spacing.dart';
 import 'package:habit_bucket/widgets/app_button.dart';
 import 'package:habit_bucket/widgets/app_input.dart';
@@ -38,7 +39,6 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
   late Animation<double> _reminderHeightAnimation;
   late Animation<double> _frequencyOpacityAnimation;
 
-  
   bool _isCreatingHabit = false;
 
   @override
@@ -144,9 +144,9 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
   Widget _buildFrequencySelector() {
     return Container(
       decoration: BoxDecoration(
-        color: HabitBucketColors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: HabitBucketColors.mediumGray),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Row(
         children: [
@@ -176,7 +176,9 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
             label,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: isSelected ? Colors.white : HabitBucketColors.black,
+              color: isSelected
+                  ? Colors.white
+                  : Theme.of(context).colorScheme.onSurface,
               fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
             ),
           ),
@@ -191,9 +193,9 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
       child: Container(
         padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: HabitBucketColors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: HabitBucketColors.mediumGray),
+          border: Border.all(color: Theme.of(context).colorScheme.outline),
         ),
         child: Row(
           children: [
@@ -205,7 +207,10 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
             12.spaceW,
             Text(
               'Reminder time',
-              style: TextStyle(fontSize: 16, color: HabitBucketColors.black),
+              style: TextStyle(
+                fontSize: 16,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
             Spacer(),
             Text(
@@ -219,7 +224,7 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
             8.spaceW,
             FaIcon(
               FontAwesomeIcons.chevronRight,
-              color: HabitBucketColors.mediumGray,
+              color: Theme.of(context).colorScheme.outline,
               size: 14,
             ),
           ],
@@ -239,7 +244,7 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
   //         style: TextStyle(
   //           fontSize: 16,
   //           fontWeight: FontWeight.w600,
-  //           color: HabitBucketColors.black,
+  //           color:  Theme.of(context).colorScheme.onSurface,
   //         ),
   //       ),
   //       12.spaceH,
@@ -276,12 +281,12 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
   //               decoration: BoxDecoration(
   //                 color: isSelected
   //                     ? HabitBucketColors.mainPurple
-  //                     : HabitBucketColors.white,
+  //                     : Theme.of(context).colorScheme.surface,
   //                 borderRadius: BorderRadius.circular(20),
   //                 border: Border.all(
   //                   color: isSelected
   //                       ? HabitBucketColors.mainPurple
-  //                       : HabitBucketColors.mediumGray,
+  //                       : Theme.of(context).colorScheme.outline,
   //                 ),
   //               ),
   //               child: Center(
@@ -290,7 +295,7 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
   //                   style: TextStyle(
   //                     color: isSelected
   //                         ? Colors.white
-  //                         : HabitBucketColors.black,
+  //                         :  Theme.of(context).colorScheme.onSurface,
   //                     fontWeight: FontWeight.w500,
   //                     fontSize: 12,
   //                   ),
@@ -323,15 +328,15 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
   //         style: TextStyle(
   //           fontSize: 16,
   //           fontWeight: FontWeight.w600,
-  //           color: HabitBucketColors.black,
+  //           color:  Theme.of(context).colorScheme.onSurface,
   //         ),
   //       ),
   //       12.spaceH,
   //       Container(
   //         decoration: BoxDecoration(
-  //           color: HabitBucketColors.white,
+  //           color: Theme.of(context).colorScheme.surface,
   //           borderRadius: BorderRadius.circular(12),
-  //           border: Border.all(color: HabitBucketColors.mediumGray),
+  //           border: Border.all(color: Theme.of(context).colorScheme.outline),
   //         ),
   //         child: Column(
   //           children: List.generate(weekdays.length, (index) {
@@ -369,8 +374,8 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
   //                       weekdays[index],
   //                       style: TextStyle(
   //                         color: isSelected
-  //                             ? HabitBucketColors.white
-  //                             : HabitBucketColors.black,
+  //                             ? Theme.of(context).colorScheme.surface
+  //                             :  Theme.of(context).colorScheme.onSurface,
   //                         fontWeight: isSelected
   //                             ? FontWeight.w600
   //                             : FontWeight.w500,
@@ -431,7 +436,7 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
     try {
       // Simulate API call or database operation
       await Future.delayed(Duration(seconds: 2));
-      
+
       // TODO: Add your actual habit creation logic here
       // await HabitService.createHabit(
       //   name: _habitNameController.text.trim(),
@@ -448,7 +453,6 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
       );
       // Navigate back or to habits list
       Navigator.pop(context);
-      
     } catch (error) {
       // Handle error
       ScaffoldMessenger.of(context).showSnackBar(
@@ -469,7 +473,7 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: HabitBucketColors.lightGray,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Hero(
         tag: "new-habit-fab",
         child: SafeArea(
@@ -485,16 +489,16 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
                       child: Container(
                         padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: HabitBucketColors.white,
+                          color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: HabitBucketColors.mediumGray,
+                            color: Theme.of(context).colorScheme.outline,
                           ),
                         ),
                         child: FaIcon(
                           FontAwesomeIcons.arrowLeft,
                           size: 16,
-                          color: HabitBucketColors.black,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ),
@@ -504,7 +508,7 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w600,
-                        color: HabitBucketColors.black,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ],
@@ -598,10 +602,10 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
                         Container(
                           padding: EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: HabitBucketColors.white,
+                            color: Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: HabitBucketColors.mediumGray,
+                              color: Theme.of(context).colorScheme.outline,
                             ),
                           ),
                           child: Row(
@@ -621,7 +625,9 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
-                                        color: HabitBucketColors.black,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
                                       ),
                                     ),
                                     2.spaceH,
@@ -629,7 +635,10 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
                                       'Get reminded at a random time during the day',
                                       style: TextStyle(
                                         fontSize: 12,
-                                        color: HabitBucketColors.mediumGray,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface
+                                            .withOpacityFactor(0.55),
                                       ),
                                     ),
                                   ],
@@ -679,7 +688,7 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
                           '${_selectedFrequency == HabitFrequency.weekly ? 'Weekly' : ''}${_selectedFrequency == HabitFrequency.monthly ? 'Monthly' : ''} reminders coming soon...\nBut you can create your habit',
                           style: TextStyle(
                             fontSize: 12.5,
-                            color: HabitBucketColors.mediumGray,
+                            color: Theme.of(context).colorScheme.outline,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -691,25 +700,25 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
               ),
 
               Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  16.spaceH, // Add some spacing before the button
-                  AppButton(
-                    label: "Create Habit",
-                    onPressed: _createHabit,
-                    isLoading: _isCreatingHabit,
-                  ),
-                  // Optional: Add a cancel button
-                  // 8.spaceH,
-                  // AppButton(
-                  //   label: "Cancel",
-                  //   onPressed: _isCreatingHabit ? null : () => Navigator.pop(context),
-                  //   isOutlined: true,
-                  // ),
-                ],
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    16.spaceH, // Add some spacing before the button
+                    AppButton(
+                      label: "Create Habit",
+                      onPressed: _createHabit,
+                      isLoading: _isCreatingHabit,
+                    ),
+                    // Optional: Add a cancel button
+                    // 8.spaceH,
+                    // AppButton(
+                    //   label: "Cancel",
+                    //   onPressed: _isCreatingHabit ? null : () => Navigator.pop(context),
+                    //   isOutlined: true,
+                    // ),
+                  ],
+                ),
               ),
-            ),
             ],
           ),
         ),
