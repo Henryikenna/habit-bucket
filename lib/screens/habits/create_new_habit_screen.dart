@@ -233,184 +233,11 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
     );
   }
 
-  // Widget _buildDaySelector() {
-  //   List<String> weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       Text(
-  //         'Select day',
-  //         style: TextStyle(
-  //           fontSize: 16,
-  //           fontWeight: FontWeight.w600,
-  //           color:  Theme.of(context).colorScheme.onSurface,
-  //         ),
-  //       ),
-  //       12.spaceH,
-  //       Row(
-  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //         children: List.generate(7, (index) {
-  //           int dayValue = index + 1;
-  //           // bool isSelected = _selectedDays.contains(dayValue);
-  //           bool isSelected = _selectedDay == dayValue;
-
-  //           return GestureDetector(
-  //             onTap: () {
-  //               setState(() {
-  //                 // if (isSelected) {
-  //                 //   _selectedDays.remove(dayValue);
-  //                 // } else {
-  //                 //   _selectedDays.add(dayValue);
-  //                 // }
-
-  //                 // if (_selectedDays.isEmpty) {
-  //                 //   _selectedDays.add(dayValue);
-  //                 // } else {
-  //                 //   _selectedDays.clear();
-  //                 //   _selectedDays.add(dayValue);
-  //                 // }
-
-  //                 _selectedDay = dayValue;
-  //               });
-  //             },
-  //             child: AnimatedContainer(
-  //               duration: Duration(milliseconds: 200),
-  //               width: 40,
-  //               height: 40,
-  //               decoration: BoxDecoration(
-  //                 color: isSelected
-  //                     ? HabitBucketColors.mainPurple
-  //                     : Theme.of(context).colorScheme.surface,
-  //                 borderRadius: BorderRadius.circular(20),
-  //                 border: Border.all(
-  //                   color: isSelected
-  //                       ? HabitBucketColors.mainPurple
-  //                       : Theme.of(context).colorScheme.outline,
-  //                 ),
-  //               ),
-  //               child: Center(
-  //                 child: Text(
-  //                   weekdays[index],
-  //                   style: TextStyle(
-  //                     color: isSelected
-  //                         ? Colors.white
-  //                         :  Theme.of(context).colorScheme.onSurface,
-  //                     fontWeight: FontWeight.w500,
-  //                     fontSize: 12,
-  //                   ),
-  //                 ),
-  //               ),
-  //             ),
-  //           );
-  //         }),
-  //       ),
-  //     ],
-  //   );
-  // }
-
-  // Widget _buildWeekdaySelector() {
-  //   List<String> weekdays = [
-  //     'Every Monday',
-  //     'Every Tuesday',
-  //     'Every Wednesday',
-  //     'Every Thursday',
-  //     'Every Friday',
-  //     'Every Saturday',
-  //     'Every Sunday',
-  //   ];
-
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       Text(
-  //         'Select weekday',
-  //         style: TextStyle(
-  //           fontSize: 16,
-  //           fontWeight: FontWeight.w600,
-  //           color:  Theme.of(context).colorScheme.onSurface,
-  //         ),
-  //       ),
-  //       12.spaceH,
-  //       Container(
-  //         decoration: BoxDecoration(
-  //           color: Theme.of(context).colorScheme.surface,
-  //           borderRadius: BorderRadius.circular(12),
-  //           border: Border.all(color: Theme.of(context).colorScheme.outline),
-  //         ),
-  //         child: Column(
-  //           children: List.generate(weekdays.length, (index) {
-  //             int dayValue = index + 1;
-  //             bool isSelected = _selectedWeekday == dayValue;
-
-  //             return GestureDetector(
-  //               onTap: () {
-  //                 setState(() {
-  //                   _selectedWeekday = dayValue;
-  //                 });
-  //               },
-  //               child: AnimatedContainer(
-  //                 duration: Duration(milliseconds: 200),
-  //                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-  //                 decoration: BoxDecoration(
-  //                   color: isSelected
-  //                       ? HabitBucketColors.mainPurple
-  //                       : Colors.transparent,
-  //                   borderRadius: index == 0
-  //                       ? BorderRadius.only(
-  //                           topLeft: Radius.circular(12),
-  //                           topRight: Radius.circular(12),
-  //                         )
-  //                       : index == weekdays.length - 1
-  //                       ? BorderRadius.only(
-  //                           bottomLeft: Radius.circular(12),
-  //                           bottomRight: Radius.circular(12),
-  //                         )
-  //                       : BorderRadius.zero,
-  //                 ),
-  //                 child: Row(
-  //                   children: [
-  //                     Text(
-  //                       weekdays[index],
-  //                       style: TextStyle(
-  //                         color: isSelected
-  //                             ? Theme.of(context).colorScheme.surface
-  //                             :  Theme.of(context).colorScheme.onSurface,
-  //                         fontWeight: isSelected
-  //                             ? FontWeight.w600
-  //                             : FontWeight.w500,
-  //                       ),
-  //                     ),
-  //                     Spacer(),
-  //                     if (isSelected)
-  //                       FaIcon(
-  //                         FontAwesomeIcons.check,
-  //                         color: HabitBucketColors.mainPurple,
-  //                         size: 16,
-  //                       ),
-  //                   ],
-  //                 ),
-  //               ),
-  //             );
-  //           }),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
 
   Widget _buildSelectionContent() {
     switch (_selectedFrequency) {
       case HabitFrequency.daily:
         return _buildTimeSelector();
-      // case HabitFrequency.weekly:
-      //   return Column(
-      //     children: [_buildDaySelector(), 20.spaceH, _buildTimeSelector()],
-      //   );
-      // case HabitFrequency.monthly:
-      //   return Column(
-      //     children: [_buildWeekdaySelector(), 20.spaceH, _buildTimeSelector()],
-      //   );
       case HabitFrequency.weekly:
         return SizedBox();
       case HabitFrequency.monthly:
@@ -437,13 +264,7 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
       // Simulate API call or database operation
       await Future.delayed(Duration(seconds: 2));
 
-      // TODO: Add your actual habit creation logic here
-      // await HabitService.createHabit(
-      //   name: _habitNameController.text.trim(),
-      //   frequency: _selectedFrequency,
-      //   hasRandomReminder: _isRandomReminderSelected,
-      //   // Add other fields as needed
-      // );
+
       // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -543,14 +364,6 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
                         ),
                       ),
                       4.spaceH,
-                      // FrequencySelector(
-                      //   selected: _selectedFrequency,
-                      //   onChanged: (value) {
-                      //     setState(() {
-                      //       _selectedFrequency = value;
-                      //     });
-                      //   },
-                      // ),
                       _buildFrequencySelector(),
                       16.spaceH,
                       Text(
@@ -562,42 +375,7 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
                         ),
                       ),
                       8.spaceH,
-
-                      //                 Row(
-                      //                   children: [
-                      //                     Expanded(
-                      //                       child: Column(
-                      //                         crossAxisAlignment: CrossAxisAlignment.start,
-                      //                         mainAxisSize: MainAxisSize.min,
-                      //                         children: [
-                      //                           Text(
-                      //                             "Random",
-                      //                             style: TextStyle(
-                      //                               fontSize: 16,
-                      //                               fontWeight: FontWeight.w500,
-                      //                               // fontFamily: 'Manrope',
-                      //                             ),
-                      //                           ),
-                      //                           2.spaceH,
-                      //                           Text(
-                      //                             "Send you a reminder notification at a random time during the day/week/month.",
-                      //                             style: TextStyle(
-                      //                               fontSize: 12,
-                      //                               fontWeight: FontWeight.w500,
-                      //                               fontFamily: 'Manrope',
-                      //                               color: Colors.grey[700],
-                      //                             ),
-                      //                           ),
-                      //                         ],
-                      //                       ),
-                      //                     ),
-                      // 8.spaceW,
-                      //                     Switch.adaptive(
-                      //                       value: _isRandomReminderSelected,
-                      //                       onChanged: (val) {},
-                      //                     ),
-                      //                   ],
-                      //                 ),
+                      
                       if (_selectedFrequency == HabitFrequency.daily) ...[
                         Container(
                           padding: EdgeInsets.all(16),
@@ -703,19 +481,12 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    16.spaceH, // Add some spacing before the button
+                    16.spaceH,
                     AppButton(
                       label: "Create Habit",
                       onPressed: _createHabit,
                       isLoading: _isCreatingHabit,
                     ),
-                    // Optional: Add a cancel button
-                    // 8.spaceH,
-                    // AppButton(
-                    //   label: "Cancel",
-                    //   onPressed: _isCreatingHabit ? null : () => Navigator.pop(context),
-                    //   isOutlined: true,
-                    // ),
                   ],
                 ),
               ),

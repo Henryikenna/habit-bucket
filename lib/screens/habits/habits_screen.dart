@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -35,15 +33,6 @@ class _HabitsScreenState extends State<HabitsScreen>
         });
       }
     });
-
-    // _bounceController = AnimationController(
-    //   vsync: this,
-    //   duration: Duration(milliseconds: 1500),
-    // )..repeat(reverse: true);
-
-    // _bounceAnimation = Tween<double>(begin: 0, end: -8).animate(
-    //   CurvedAnimation(parent: _bounceController, curve: Curves.easeInOut),
-    // );
   }
 
   List<Widget> viewsList = [
@@ -53,8 +42,6 @@ class _HabitsScreenState extends State<HabitsScreen>
   ];
 
   int currentViewIndex = 0;
-
-  // HabitFrequency _habitFrequency = HabitFrequency.daily;
 
   void changeView(int index) {
     setState(() {
@@ -113,44 +100,6 @@ class _HabitsScreenState extends State<HabitsScreen>
               ),
             ),
 
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(horizontal: 16),
-            //   child: Column(
-            //     crossAxisAlignment: CrossAxisAlignment.start,
-            //     children: [
-            //       Text(
-            //         _getGreeting(), // "Good morning", "Good afternoon", etc.
-            //         style: TextStyle(
-            //           fontSize: 36,
-            //           color: HabitBucketColors.black,
-            //         ),
-            //       ),
-            //       4.spaceH,
-            //       Text(
-            //         "Alexis",
-            //         style: TextStyle(fontSize: 36, fontWeight: FontWeight.w600),
-            //       ),
-            //       8.spaceH,
-            //       // Add a motivational stat
-            //       Container(
-            //         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            //         decoration: BoxDecoration(
-            //           color: HabitBucketColors.mainPurple.withOpacityFactor(
-            //             0.1,
-            //           ),
-            //           borderRadius: BorderRadius.circular(20),
-            //         ),
-            //         child: Text(
-            //           "🔥 5 day streak • 3/5 habits today",
-            //           style: TextStyle(
-            //             fontSize: 14,
-            //             color: HabitBucketColors.mainPurple,
-            //           ),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
             24.spaceH,
             Expanded(
               child: Row(
@@ -162,7 +111,9 @@ class _HabitsScreenState extends State<HabitsScreen>
                     margin: EdgeInsets.all(0),
                     decoration: BoxDecoration(
                       border: Border(
-                        right: BorderSide(color:  Theme.of(context).colorScheme.onSurface),
+                        right: BorderSide(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                     ),
                     child: Column(
@@ -193,10 +144,6 @@ class _HabitsScreenState extends State<HabitsScreen>
                                     size: 24,
                                     color: currentViewIndex == 0
                                         ? HabitBucketColors.lightGray
-                                        // : Theme.of(context).brightness ==
-                                        //       Brightness.light
-                                        // ? HabitBucketColors.black
-                                        // : HabitBucketColors.lightGray,
                                         : Theme.of(
                                             context,
                                           ).colorScheme.onSurface,
@@ -211,13 +158,6 @@ class _HabitsScreenState extends State<HabitsScreen>
                                             "Daily",
                                             style: TextStyle(
                                               fontSize: 14,
-
-                                              // fontFamily: manropeFont,
-                                              // fontWeight: FontWeight.w600,
-                                              // color: currentViewIndex == 0
-                                              //     ? HabitBucketColors.lightGray
-                                              //     : HabitBucketColors.black,
-                                              // color: HabitBucketColors.black,
                                               color: Theme.of(
                                                 context,
                                               ).colorScheme.onSurface,
@@ -229,13 +169,7 @@ class _HabitsScreenState extends State<HabitsScreen>
                             ),
                           ),
                         ),
-                        // Container(
-                        //   width: double.infinity,
-                        //   height: 1,
-                        //   decoration: BoxDecoration(
-                        //     color: HabitBucketColors.mediumGray,
-                        //   ),
-                        // ),
+
                         Expanded(
                           child: InkWell(
                             onTap: () {
@@ -279,11 +213,6 @@ class _HabitsScreenState extends State<HabitsScreen>
                                             "Weekly",
                                             style: TextStyle(
                                               fontSize: 14,
-                                              // fontFamily: manropeFont,
-                                              // fontWeight: FontWeight.w500,
-                                              // color: currentViewIndex == 1
-                                              //     ? HabitBucketColors.lightGray
-                                              //     : HabitBucketColors.black,
                                               color: Theme.of(
                                                 context,
                                               ).colorScheme.onSurface,
@@ -338,11 +267,6 @@ class _HabitsScreenState extends State<HabitsScreen>
                                             "Monthly",
                                             style: TextStyle(
                                               fontSize: 14,
-                                              // fontFamily: manropeFont,
-                                              // fontWeight: FontWeight.w500,
-                                              // color: currentViewIndex == 1
-                                              //     ? HabitBucketColors.lightGray
-                                              //     : HabitBucketColors.black,
                                               color: Theme.of(
                                                 context,
                                               ).colorScheme.onSurface,
@@ -358,67 +282,6 @@ class _HabitsScreenState extends State<HabitsScreen>
                     ),
                   ),
                   Expanded(
-                    // child: Stack(
-                    //   fit: StackFit.expand,
-                    //   children: [
-                    //     // SingleChildScrollView(
-                    //     //   controller: _scrollController,
-                    //     //   padding: EdgeInsets.only(bottom: 80),
-                    //       // child: viewsList[currentViewIndex],
-                    //       // child: AnimatedSwitcher(
-                    //  AnimatedSwitcher(
-                    //         duration: Duration(milliseconds: 300),
-                    //         transitionBuilder: (child, animation) {
-                    //           return FadeTransition(
-                    //             opacity: animation,
-                    //             child: SlideTransition(
-                    //               position: Tween<Offset>(
-                    //                 begin: Offset(0.1, 0),
-                    //                 end: Offset.zero,
-                    //               ).animate(animation),
-                    //               child: child,
-                    //             ),
-                    //           );
-                    //         },
-                    //         child: Container(
-                    //           key: ValueKey(currentViewIndex),
-                    //           child: viewsList[currentViewIndex],
-                    //         ),
-                    //       ),
-                    //     // ),
-
-                    //     Positioned(
-                    //       top: 0,
-                    //       left: 0,
-                    //       right: 0,
-                    //       child: AnimatedOpacity(
-                    //         opacity: _showTopBlur ? 1.0 : 0.0,
-                    //         duration: Duration(milliseconds: 200),
-                    //         child: ClipRect(
-                    //           child: BackdropFilter(
-                    //             filter: ImageFilter.blur(sigmaX: 0, sigmaY: 10),
-                    //             child: Container(
-                    //               height: 40,
-                    //               decoration: BoxDecoration(
-                    //                 gradient: LinearGradient(
-                    //                   begin: Alignment.topCenter,
-                    //                   end: Alignment.bottomCenter,
-                    //                   colors: [
-                    //                     HabitBucketColors.lightGray,
-                    //                     HabitBucketColors.lightGray
-                    //                         .withOpacityFactor(0.8),
-                    //                     HabitBucketColors.lightGray
-                    //                         .withOpacityFactor(0.0),
-                    //                   ],
-                    //                 ),
-                    //               ),
-                    //             ),
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
                     child: AnimatedSwitcher(
                       duration: Duration(milliseconds: 300),
                       transitionBuilder: (child, animation) {
@@ -484,13 +347,6 @@ class _HabitsScreenState extends State<HabitsScreen>
           borderRadius: BorderRadiusGeometry.circular(50),
         ),
         elevation: 0,
-        // child: Center(
-        //   child: FaIcon(
-        //     FontAwesomeIcons.plus,
-        //     color: HabitBucketColors.white,
-        //     size: 24,
-        //   ),
-        // ),
       ),
     );
   }

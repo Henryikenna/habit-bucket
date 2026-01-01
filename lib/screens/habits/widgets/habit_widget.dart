@@ -29,7 +29,6 @@ class _HabitWidgetState extends State<HabitWidget> {
   late bool _isChecked;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     _isChecked = widget.isChecked;
@@ -86,7 +85,9 @@ class _HabitWidgetState extends State<HabitWidget> {
                     height: 28,
                     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Theme.of(context).colorScheme.outline),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outline,
+                      ),
                       borderRadius: BorderRadius.circular(40),
                       color: Colors.transparent,
                     ),
@@ -97,16 +98,18 @@ class _HabitWidgetState extends State<HabitWidget> {
                         FaIcon(
                           FontAwesomeIcons.bolt,
                           size: 12,
-                          color: Theme.of(context).colorScheme.onSurface
-                              .withOpacityFactor(.5),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacityFactor(.5),
                         ),
                         6.spaceW,
                         Text(
                           "${widget.habitFrequency.name.capitalize()} Habit",
                           style: TextStyle(
                             fontSize: 12,
-                            color: Theme.of(context).colorScheme.onSurface
-                                .withOpacityFactor(.5),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacityFactor(.5),
                           ),
                         ),
                       ],
@@ -165,7 +168,9 @@ class _HabitWidgetState extends State<HabitWidget> {
               topHeight: 0,
               spacing: 32,
               bottomHeight: 0,
-              color: Theme.of(context).colorScheme.onSurface.withOpacityFactor(.3),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withOpacityFactor(.3),
             ),
           ),
         ),

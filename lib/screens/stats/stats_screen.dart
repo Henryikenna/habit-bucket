@@ -119,13 +119,6 @@ class _HighlightCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: Theme.of(context).colorScheme.surface,
-        // boxShadow: [
-        //   BoxShadow(
-        //     color: Colors.black.withOpacityFactor(0.05),
-        //     blurRadius: 12,
-        //     offset: const Offset(0, 6),
-        //   ),
-        // ],
         boxShadow: Theme.of(context).brightness == Brightness.dark
             ? []
             : [
