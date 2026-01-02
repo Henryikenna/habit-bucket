@@ -1,4 +1,4 @@
-import 'package:habit_bucket/enums/habit_frequency_enum.dart';
+import 'package:habit_bucket/core/enums/habit_frequency_enum.dart';
 
 class HabitModel {
   final String title;

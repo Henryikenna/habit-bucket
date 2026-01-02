@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:habit_bucket/enums/habit_frequency_enum.dart';
+import 'package:habit_bucket/core/enums/habit_frequency_enum.dart';
 import 'package:habit_bucket/screens/habits/create_new_habit_screen.dart';
 import 'package:habit_bucket/screens/habits/daily_view.dart';
 import 'package:habit_bucket/utils/colors.dart';

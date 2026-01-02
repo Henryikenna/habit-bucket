@@ -1,11 +1,20 @@
 
 import 'package:flutter/material.dart';
-import 'package:habit_bucket/bottom_nav.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:habit_bucket/screens/auth/auth_gate.dart';
 import 'package:habit_bucket/theme/app_theme.dart';
 import 'package:habit_bucket/theme/theme_controller.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await dotenv.load(fileName: ".env");
+
+  await Supabase.initialize(
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+  );
 
   final themeController = ThemeController();
   await themeController.load();
@@ -36,7 +45,8 @@ class MyApp extends StatelessWidget {
             theme: AppTheme.light(),
             darkTheme: AppTheme.dark(),
             themeMode: themeController.themeMode,
-            home: BottomNav(themeController: themeController),
+            // home: BottomNav(themeController: themeController),
+            home: AuthGate(themeController: themeController)
           );
         },
       ),

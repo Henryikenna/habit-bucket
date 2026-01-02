@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:habit_bucket/enums/habit_frequency_enum.dart';
+import 'package:habit_bucket/core/enums/habit_frequency_enum.dart';
 import 'package:habit_bucket/utils/capitalize_extension.dart';
 import 'package:habit_bucket/utils/colors.dart';
 import 'package:habit_bucket/utils/opacity.dart';

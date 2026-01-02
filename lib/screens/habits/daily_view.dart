@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:habit_bucket/enums/habit_frequency_enum.dart';
+import 'package:habit_bucket/core/enums/habit_frequency_enum.dart';
 import 'package:habit_bucket/models/habit_model.dart';
 import 'package:habit_bucket/screens/habits/widgets/habit_widget.dart';
 import 'package:habit_bucket/utils/opacity.dart';
