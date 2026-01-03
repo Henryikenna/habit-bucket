@@ -57,6 +57,25 @@ class LocalHabitRepository {
       ),
     );
   }
+
+
+
+  
+  Stream<List<Habit>> watchAllNonDeletedHabits() {
+  final q =
+      (db.select(db.habits)
+            ..where((t) => t.deleted.equals(false))
+            ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]))
+          .watch();
+  return q;
+}
+
+Future<List<Habit>> getAllNonDeletedHabits() {
+  final q = (db.select(db.habits)
+        ..where((t) => t.deleted.equals(false))
+        ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]));
+  return q.get();
+}
 }
 
 class LocalCompletionRepository {
@@ -180,4 +199,12 @@ class LocalProfileRepository {
           ),
         );
   }
+
+
+
+
+
+
+
+
 }
