@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:habit_bucket/core/enums/habit_frequency_enum.dart';
+import 'package:habit_bucket/providers/providers.dart';
 import 'package:habit_bucket/utils/colors.dart';
 import 'package:habit_bucket/utils/opacity.dart';
 import 'package:habit_bucket/utils/spacing.dart';
 import 'package:habit_bucket/widgets/app_button.dart';
 import 'package:habit_bucket/widgets/app_input.dart';
 
-class CreateNewHabitScreen extends StatefulWidget {
+class CreateNewHabitScreen extends ConsumerStatefulWidget {
   final HabitFrequency currentSectionSelected;
 
   const CreateNewHabitScreen({super.key, required this.currentSectionSelected});
 
   @override
-  State<CreateNewHabitScreen> createState() => _CreateNewHabitScreenState();
+  ConsumerState<CreateNewHabitScreen> createState() =>
+      _CreateNewHabitScreenState();
 }
 
-class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
+class _CreateNewHabitScreenState extends ConsumerState<CreateNewHabitScreen>
     with TickerProviderStateMixin {
   final TextEditingController _habitNameController = TextEditingController();
 
@@ -233,7 +236,6 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
     );
   }
 
-
   Widget _buildSelectionContent() {
     switch (_selectedFrequency) {
       case HabitFrequency.daily:
@@ -246,49 +248,116 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
   }
 
   // Add this method to handle habit creation
+  // Future<void> _createHabit() async {
+  //   // Validate the form
+  //   if (_habitNameController.text.trim().isEmpty) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text('Please enter a habit name'),
+  //         backgroundColor: Colors.red,
+  //       ),
+  //     );
+  //     return;
+  //   }
+  //   setState(() {
+  //     _isCreatingHabit = true;
+  //   });
+  //   try {
+  //     // Simulate API call or database operation
+  //     await Future.delayed(Duration(seconds: 2));
+
+  //     // Show success message
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text('Habit created successfully!'),
+  //         backgroundColor: Colors.green,
+  //       ),
+  //     );
+  //     // Navigate back or to habits list
+  //     Navigator.pop(context);
+  //   } catch (error) {
+  //     // Handle error
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text('Failed to create habit: $error'),
+  //         backgroundColor: Colors.red,
+  //       ),
+  //     );
+  //   } finally {
+  //     if (mounted) {
+  //       setState(() {
+  //         _isCreatingHabit = false;
+  //       });
+  //     }
+  //   }
+  // }
+
   Future<void> _createHabit() async {
-    // Validate the form
-    if (_habitNameController.text.trim().isEmpty) {
+    final title = _habitNameController.text.trim();
+    if (title.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please enter a habit name'),
-          backgroundColor: Colors.red,
-        ),
+        const SnackBar(content: Text('Please enter a habit name')),
       );
       return;
     }
-    setState(() {
-      _isCreatingHabit = true;
-    });
+
+    setState(() => _isCreatingHabit = true);
+
     try {
-      // Simulate API call or database operation
-      await Future.delayed(Duration(seconds: 2));
+      final freqStr = switch (_selectedFrequency) {
+        HabitFrequency.daily => 'daily',
+        HabitFrequency.weekly => 'weekly',
+        HabitFrequency.monthly => 'monthly',
+      };
 
+      // Reminder rules
+      final reminderEnabled =
+          true; // you don’t currently have a disable toggle in UI
+      final reminderRandom = (_selectedFrequency == HabitFrequency.daily)
+          ? _randomReminders
+          : false; // weekly/monthly fixed time (for now)
 
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Habit created successfully!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-      // Navigate back or to habits list
-      Navigator.pop(context);
-    } catch (error) {
-      // Handle error
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to create habit: $error'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      final reminderTimeMinutes = (reminderRandom || !reminderEnabled)
+          ? null
+          : (_selectedTime.hour * 60 + _selectedTime.minute);
+
+      // Due day defaults (you can build UI for these next)
+      final int? weeklyDay = _selectedFrequency == HabitFrequency.weekly
+          ? 1 // Monday default (0=Sun..6=Sat in our schema, but your code uses 1=Mon)
+          : null;
+
+      final int? monthlyDay = _selectedFrequency == HabitFrequency.monthly
+          ? 1
+          : null;
+
+      await ref
+          .read(localHabitRepoProvider)
+          .createHabit(
+            title: title,
+            frequency: freqStr,
+            weeklyDay: weeklyDay == null ? null : _toSundayBased(weeklyDay),
+            monthlyDay: monthlyDay,
+            reminderEnabled: reminderEnabled,
+            reminderRandom: reminderRandom,
+            reminderTimeMinutes: reminderTimeMinutes,
+          );
+
+      if (mounted) Navigator.pop(context);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to create habit: $e')));
     } finally {
-      if (mounted) {
-        setState(() {
-          _isCreatingHabit = false;
-        });
-      }
+      if (mounted) setState(() => _isCreatingHabit = false);
     }
+  }
+
+  /// Your local state uses 1=Monday. DB uses 0=Sun..6=Sat.
+  /// Convert 1..7 (Mon..Sun) to 0..6 (Sun..Sat)
+  int _toSundayBased(int weekdayMonBased) {
+    // weekdayMonBased: 1=Mon..7=Sun
+    return weekdayMonBased % 7; // Sun->0, Mon->1, ... Sat->6
   }
 
   @override
@@ -375,7 +444,7 @@ class _CreateNewHabitScreenState extends State<CreateNewHabitScreen>
                         ),
                       ),
                       8.spaceH,
-                      
+
                       if (_selectedFrequency == HabitFrequency.daily) ...[
                         Container(
                           padding: EdgeInsets.all(16),

@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:habit_bucket/screens/auth/auth_gate.dart';
 import 'package:habit_bucket/theme/app_theme.dart';
 import 'package:habit_bucket/theme/theme_controller.dart';
@@ -19,7 +19,7 @@ Future<void> main() async {
   final themeController = ThemeController();
   await themeController.load();
 
-  runApp(MyApp(themeController: themeController));
+  runApp(ProviderScope(child: MyApp(themeController: themeController)));
 }
 
 class MyApp extends StatelessWidget {
@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
             darkTheme: AppTheme.dark(),
             themeMode: themeController.themeMode,
             // home: BottomNav(themeController: themeController),
-            home: AuthGate(themeController: themeController)
+            home: AuthGate(themeController: themeController),
           );
         },
       ),

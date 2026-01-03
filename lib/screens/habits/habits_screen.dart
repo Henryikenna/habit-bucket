@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:habit_bucket/core/enums/habit_frequency_enum.dart';
+import 'package:habit_bucket/core/local/app_db.dart';
+import 'package:habit_bucket/providers/providers.dart';
+import 'package:habit_bucket/providers/stats_providers.dart';
 import 'package:habit_bucket/screens/habits/create_new_habit_screen.dart';
 import 'package:habit_bucket/screens/habits/daily_view.dart';
 import 'package:habit_bucket/utils/colors.dart';
 import 'package:habit_bucket/utils/opacity.dart';
 import 'package:habit_bucket/utils/spacing.dart';
 
-class HabitsScreen extends StatefulWidget {
+class HabitsScreen extends ConsumerStatefulWidget {
   const HabitsScreen({super.key});
 
   @override
-  State<HabitsScreen> createState() => _HabitsScreenState();
+  ConsumerState<HabitsScreen> createState() => _HabitsScreenState();
 }
 
-class _HabitsScreenState extends State<HabitsScreen>
+class _HabitsScreenState extends ConsumerState<HabitsScreen>
     with SingleTickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
   bool _showTopBlur = false;
@@ -35,11 +39,25 @@ class _HabitsScreenState extends State<HabitsScreen>
     });
   }
 
-  List<Widget> viewsList = [
-    DailyView(frequency: HabitFrequency.daily),
-    SizedBox(height: 1500, child: Text("WEEKLY...MAIN CONTENT")),
-    Center(child: Text("MONTHLY...MAIN CONTENT")),
-  ];
+  Widget getView({
+    required int index,
+    required List<Habit> habits,
+    required int weekStartsOn,
+    required Map<String, HabitStreak> streaks,
+  }) {
+    List<Widget> viewsList = [
+      DailyView(
+        frequency: HabitFrequency.daily,
+        habitList: habits,
+        weekStartsOn: weekStartsOn,
+        streaks: streaks,
+      ),
+      SizedBox(height: 1500, child: Text("WEEKLY...MAIN CONTENT")),
+      Center(child: Text("MONTHLY...MAIN CONTENT")),
+    ];
+
+    return viewsList[index];
+  }
 
   int currentViewIndex = 0;
 
@@ -80,6 +98,12 @@ class _HabitsScreenState extends State<HabitsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final habitsAsync = ref.watch(habitsProvider);
+    final weekStartsOnAsync = ref.watch(weekStartsOnProvider);
+    final weekStartsOn = weekStartsOnAsync.value ?? 1;
+    final streaksAsync = ref.watch(habitStreaksProvider);
+    final streaks = streaksAsync.value ?? {};
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -282,24 +306,48 @@ class _HabitsScreenState extends State<HabitsScreen>
                     ),
                   ),
                   Expanded(
-                    child: AnimatedSwitcher(
-                      duration: Duration(milliseconds: 300),
-                      transitionBuilder: (child, animation) {
-                        return FadeTransition(
-                          opacity: animation,
-                          child: SlideTransition(
-                            position: Tween<Offset>(
-                              begin: Offset(0.1, 0),
-                              end: Offset.zero,
-                            ).animate(animation),
-                            child: child,
+                    child: habitsAsync.when(
+                      data: (habits) {
+                        final viewFreq = getViewBasedOnHabitFreq();
+                        final filtered = habits.where((h) {
+                          final f = h.frequency; // 'daily'|'weekly'|'monthly'
+                          return switch (viewFreq) {
+                            HabitFrequency.daily => f == 'daily',
+                            HabitFrequency.weekly => f == 'weekly',
+                            HabitFrequency.monthly => f == 'monthly',
+                          };
+                        }).toList();
+
+                        return AnimatedSwitcher(
+                          duration: Duration(milliseconds: 300),
+                          transitionBuilder: (child, animation) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: Offset(0.1, 0),
+                                  end: Offset.zero,
+                                ).animate(animation),
+                                child: child,
+                              ),
+                            );
+                          },
+                          child: Container(
+                            key: ValueKey(currentViewIndex),
+                            // child: viewsList[currentViewIndex],
+                            child: getView(
+                              index: currentViewIndex,
+                              // habits: habits,
+                              habits: filtered,
+                              weekStartsOn: weekStartsOn,
+                              streaks: streaks,
+                            ),
                           ),
                         );
                       },
-                      child: Container(
-                        key: ValueKey(currentViewIndex),
-                        child: viewsList[currentViewIndex],
-                      ),
+                      error: (e, _) => Center(child: Text('Error: $e')),
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
                     ),
                   ),
                 ],

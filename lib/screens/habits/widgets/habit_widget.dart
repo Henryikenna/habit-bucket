@@ -7,11 +7,13 @@ import 'package:habit_bucket/utils/opacity.dart';
 import 'package:habit_bucket/utils/spacing.dart';
 import 'package:habit_bucket/widgets/check_off_button.dart';
 
-class HabitWidget extends StatefulWidget {
+class HabitWidget extends StatelessWidget {
   final bool isChecked;
+  final VoidCallback onToggle;
   final bool isStreakActivated;
   final String title;
   final HabitFrequency habitFrequency;
+  final int streakCount;
 
   const HabitWidget({
     super.key,
@@ -19,20 +21,8 @@ class HabitWidget extends StatefulWidget {
     required this.isStreakActivated,
     required this.title,
     required this.habitFrequency,
+    required this.onToggle, required this.streakCount,
   });
-
-  @override
-  State<HabitWidget> createState() => _HabitWidgetState();
-}
-
-class _HabitWidgetState extends State<HabitWidget> {
-  late bool _isChecked;
-  @override
-  void initState() {
-    super.initState();
-
-    _isChecked = widget.isChecked;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +47,7 @@ class _HabitWidgetState extends State<HabitWidget> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.title,
+                          title,
                           style: TextStyle(
                             fontSize: 14,
                             color: Theme.of(context).colorScheme.onSurface,
@@ -67,14 +57,7 @@ class _HabitWidgetState extends State<HabitWidget> {
                       ],
                     ),
 
-                    CheckOffButton(
-                      isChecked: _isChecked,
-                      onTap: () {
-                        setState(() {
-                          _isChecked = !_isChecked;
-                        });
-                      },
-                    ),
+                    CheckOffButton(isChecked: isChecked, onTap: onToggle),
                   ],
                 ),
               ),
@@ -104,7 +87,7 @@ class _HabitWidgetState extends State<HabitWidget> {
                         ),
                         6.spaceW,
                         Text(
-                          "${widget.habitFrequency.name.capitalize()} Habit",
+                          "${habitFrequency.name.capitalize()} Habit",
                           style: TextStyle(
                             fontSize: 12,
                             color: Theme.of(
@@ -123,7 +106,7 @@ class _HabitWidgetState extends State<HabitWidget> {
                     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: widget.isStreakActivated
+                        color: isStreakActivated
                             ? HabitBucketColors.pink
                             : Theme.of(context).colorScheme.outline,
                       ),
@@ -137,16 +120,16 @@ class _HabitWidgetState extends State<HabitWidget> {
                         FaIcon(
                           FontAwesomeIcons.fireFlameCurved,
                           size: 12,
-                          color: widget.isStreakActivated
+                          color: isStreakActivated
                               ? HabitBucketColors.pink
                               : Theme.of(context).colorScheme.outline,
                         ),
                         6.spaceW,
                         Text(
-                          "4",
+                          streakCount.toString(),
                           style: TextStyle(
                             fontSize: 12,
-                            color: widget.isStreakActivated
+                            color: isStreakActivated
                                 ? HabitBucketColors.pink
                                 : Theme.of(context).colorScheme.outline,
                           ),
