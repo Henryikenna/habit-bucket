@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:habit_bucket/core/enums/habit_frequency_enum.dart';
+import 'package:habit_bucket/providers/notification_providers.dart';
 import 'package:habit_bucket/providers/providers.dart';
 import 'package:habit_bucket/utils/colors.dart';
 import 'package:habit_bucket/utils/opacity.dart';
@@ -247,51 +248,6 @@ class _CreateNewHabitScreenState extends ConsumerState<CreateNewHabitScreen>
     }
   }
 
-  // Add this method to handle habit creation
-  // Future<void> _createHabit() async {
-  //   // Validate the form
-  //   if (_habitNameController.text.trim().isEmpty) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text('Please enter a habit name'),
-  //         backgroundColor: Colors.red,
-  //       ),
-  //     );
-  //     return;
-  //   }
-  //   setState(() {
-  //     _isCreatingHabit = true;
-  //   });
-  //   try {
-  //     // Simulate API call or database operation
-  //     await Future.delayed(Duration(seconds: 2));
-
-  //     // Show success message
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text('Habit created successfully!'),
-  //         backgroundColor: Colors.green,
-  //       ),
-  //     );
-  //     // Navigate back or to habits list
-  //     Navigator.pop(context);
-  //   } catch (error) {
-  //     // Handle error
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text('Failed to create habit: $error'),
-  //         backgroundColor: Colors.red,
-  //       ),
-  //     );
-  //   } finally {
-  //     if (mounted) {
-  //       setState(() {
-  //         _isCreatingHabit = false;
-  //       });
-  //     }
-  //   }
-  // }
-
   Future<void> _createHabit() async {
     final title = _habitNameController.text.trim();
     if (title.isEmpty) {
@@ -330,7 +286,7 @@ class _CreateNewHabitScreenState extends ConsumerState<CreateNewHabitScreen>
           ? 1
           : null;
 
-      await ref
+      final id = await ref
           .read(localHabitRepoProvider)
           .createHabit(
             title: title,
@@ -341,6 +297,11 @@ class _CreateNewHabitScreenState extends ConsumerState<CreateNewHabitScreen>
             reminderRandom: reminderRandom,
             reminderTimeMinutes: reminderTimeMinutes,
           );
+
+      final habit = await ref.read(localHabitRepoProvider).getHabitById(id);
+      if (habit != null) {
+        await ref.read(notificationServiceProvider).scheduleDailyHabit(habit);
+      }
 
       if (mounted) Navigator.pop(context);
     } catch (e) {

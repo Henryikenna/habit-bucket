@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:habit_bucket/core/notifications/notification_bootstrap.dart';
 import 'package:habit_bucket/screens/auth/auth_gate.dart';
 import 'package:habit_bucket/theme/app_theme.dart';
 import 'package:habit_bucket/theme/theme_controller.dart';
@@ -46,7 +47,9 @@ class MyApp extends StatelessWidget {
             darkTheme: AppTheme.dark(),
             themeMode: themeController.themeMode,
             // home: BottomNav(themeController: themeController),
-            home: AuthGate(themeController: themeController),
+            home: NotificationBootstrap(
+              child: AuthGate(themeController: themeController),
+            ),
           );
         },
       ),

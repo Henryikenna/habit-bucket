@@ -58,24 +58,34 @@ class LocalHabitRepository {
     );
   }
 
-
-
-  
   Stream<List<Habit>> watchAllNonDeletedHabits() {
-  final q =
-      (db.select(db.habits)
-            ..where((t) => t.deleted.equals(false))
-            ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]))
-          .watch();
-  return q;
-}
+    final q =
+        (db.select(db.habits)
+              ..where((t) => t.deleted.equals(false))
+              ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]))
+            .watch();
+    return q;
+  }
 
-Future<List<Habit>> getAllNonDeletedHabits() {
-  final q = (db.select(db.habits)
-        ..where((t) => t.deleted.equals(false))
-        ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]));
-  return q.get();
-}
+  Future<List<Habit>> getAllNonDeletedHabits() {
+    final q = (db.select(db.habits)
+      ..where((t) => t.deleted.equals(false))
+      ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]));
+    return q.get();
+  }
+
+  // Future<List<Habit>> getAllNonDeletedHabits() {
+  //   final q = (db.select(db.habits)
+  //     ..where((t) => t.deleted.equals(false))
+  //     ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]));
+  //   return q.get();
+  // }
+
+  Future<Habit?> getHabitById(String id) {
+    return (db.select(
+      db.habits,
+    )..where((t) => t.id.equals(id))).getSingleOrNull();
+  }
 }
 
 class LocalCompletionRepository {
@@ -199,12 +209,4 @@ class LocalProfileRepository {
           ),
         );
   }
-
-
-
-
-
-
-
-
 }
