@@ -8,6 +8,8 @@ import 'package:habit_bucket/providers/providers.dart';
 import 'package:habit_bucket/providers/stats_providers.dart';
 import 'package:habit_bucket/screens/habits/create_new_habit_screen.dart';
 import 'package:habit_bucket/screens/habits/daily_view.dart';
+import 'package:habit_bucket/screens/habits/weekly_view.dart';
+import 'package:habit_bucket/screens/habits/monthly_view.dart';
 import 'package:habit_bucket/utils/colors.dart';
 import 'package:habit_bucket/utils/opacity.dart';
 import 'package:habit_bucket/utils/spacing.dart';
@@ -45,15 +47,30 @@ class _HabitsScreenState extends ConsumerState<HabitsScreen>
     required int weekStartsOn,
     required Map<String, HabitStreak> streaks,
   }) {
+    // Filter habits based on frequency
+    final dailyHabits = habits.where((h) => h.frequency == 'daily').toList();
+    final weeklyHabits = habits.where((h) => h.frequency == 'weekly').toList();
+    final monthlyHabits = habits.where((h) => h.frequency == 'monthly').toList();
+
     List<Widget> viewsList = [
       DailyView(
         frequency: HabitFrequency.daily,
-        habitList: habits,
+        habitList: dailyHabits,
         weekStartsOn: weekStartsOn,
         streaks: streaks,
       ),
-      SizedBox(height: 1500, child: Text("WEEKLY...MAIN CONTENT")),
-      Center(child: Text("MONTHLY...MAIN CONTENT")),
+      WeeklyView(
+        frequency: HabitFrequency.weekly,
+        habitList: weeklyHabits,
+        weekStartsOn: weekStartsOn,
+        streaks: streaks,
+      ),
+      MonthlyView(
+        frequency: HabitFrequency.monthly,
+        habitList: monthlyHabits,
+        weekStartsOn: weekStartsOn,
+        streaks: streaks,
+      ),
     ];
 
     return viewsList[index];
@@ -103,6 +120,8 @@ class _HabitsScreenState extends ConsumerState<HabitsScreen>
     final weekStartsOn = weekStartsOnAsync.value ?? 1;
     final streaksAsync = ref.watch(habitStreaksProvider);
     final streaks = streaksAsync.value ?? {};
+    final profileAsync = ref.watch(userProfileProvider);
+    final firstName = profileAsync.value?.firstName ?? 'there';
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -114,7 +133,7 @@ class _HabitsScreenState extends ConsumerState<HabitsScreen>
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                "${_getGreeting()},\nAlexis",
+                "${_getGreeting()},\n$firstName",
                 style: TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.w500,

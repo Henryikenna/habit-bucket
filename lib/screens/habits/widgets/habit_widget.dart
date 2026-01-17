@@ -14,6 +14,7 @@ class HabitWidget extends StatelessWidget {
   final String title;
   final HabitFrequency habitFrequency;
   final int streakCount;
+  final VoidCallback? onMenuTap;
 
   const HabitWidget({
     super.key,
@@ -21,7 +22,9 @@ class HabitWidget extends StatelessWidget {
     required this.isStreakActivated,
     required this.title,
     required this.habitFrequency,
-    required this.onToggle, required this.streakCount,
+    required this.onToggle,
+    required this.streakCount,
+    this.onMenuTap,
   });
 
   @override
@@ -137,6 +140,34 @@ class HabitWidget extends StatelessWidget {
                       ],
                     ),
                   ),
+
+                  if (onMenuTap != null) ...[
+                    8.spaceW,
+                    GestureDetector(
+                      onTap: onMenuTap,
+                      child: Container(
+                        height: 28,
+                        width: 28,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.outline,
+                          ),
+                          borderRadius: BorderRadius.circular(40),
+                          color: Colors.transparent,
+                        ),
+                        child: Center(
+                          child: FaIcon(
+                            FontAwesomeIcons.ellipsisVertical,
+                            size: 14,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacityFactor(.5),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ],

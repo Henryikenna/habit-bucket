@@ -11,6 +11,7 @@ import 'package:habit_bucket/providers/providers.dart';
 import 'package:habit_bucket/providers/stats_providers.dart';
 import 'package:habit_bucket/providers/streak_display_provider.dart';
 import 'package:habit_bucket/providers/undo_lock_provider.dart';
+import 'package:habit_bucket/screens/habits/edit_habit_screen.dart';
 import 'package:habit_bucket/screens/habits/widgets/habit_widget.dart';
 import 'package:habit_bucket/utils/opacity.dart';
 import 'package:habit_bucket/utils/spacing.dart';
@@ -189,6 +190,13 @@ class DailyView extends ConsumerWidget {
                         habitFrequency: getHabitFrequencyEnum(
                           habitFrequency: habit.frequency,
                         ),
+                        onMenuTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => EditHabitScreen(habitId: habit.id),
+                            ),
+                          );
+                        },
                         onToggle: () async {
                           final repo = ref.read(localCompletionRepoProvider);
                           final locks = ref.read(

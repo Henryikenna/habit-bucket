@@ -37,6 +37,13 @@ final weekStartsOnProvider = StreamProvider<int>((ref) {
   return ref.watch(localProfileRepoProvider).watchWeekStartsOn(uid);
 });
 
+/// Current user's profile
+final userProfileProvider = StreamProvider<ProfileData?>((ref) {
+  final uid = ref.watch(userIdProvider);
+  if (uid == null) return Stream.value(null);
+  return ref.watch(localProfileRepoProvider).watchProfile(uid);
+});
+
 /// Stream all active habits from local DB
 final habitsProvider = StreamProvider<List<Habit>>((ref) {
   return ref.watch(localHabitRepoProvider).watchActiveHabits();

@@ -1,21 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:habit_bucket/providers/providers.dart';
 import 'package:habit_bucket/utils/opacity.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class SignUpScreen extends StatefulWidget {
+class SignUpScreen extends ConsumerStatefulWidget {
   const SignUpScreen({super.key});
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  ConsumerState<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class _SignUpScreenState extends ConsumerState<SignUpScreen> {
+  final _firstName = TextEditingController();
+  final _lastName = TextEditingController();
   final _email = TextEditingController();
   final _password = TextEditingController();
   bool _loading = false;
   String? _error;
 
   Future<void> _signUp() async {
+    // Validate names
+    if (_firstName.text.trim().isEmpty || _lastName.text.trim().isEmpty) {
+      setState(() => _error = 'Please enter your first and last name');
+      return;
+    }
+
+    if (_email.text.trim().isEmpty) {
+      setState(() => _error = 'Please enter your email');
+      return;
+    }
+
+    if (_password.text.isEmpty || _password.text.length < 6) {
+      setState(() => _error = 'Password must be at least 6 characters');
+      return;
+    }
+
     setState(() {
       _loading = true;
       _error = null;
@@ -27,14 +47,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
         password: _password.text,
       );
 
-      // If email confirmation is OFF, session exists immediately.
-      // Either way, we can create a profile row (upsert is safe).
       final user = res.user ?? Supabase.instance.client.auth.currentUser;
       if (user != null) {
+        final firstName = _firstName.text.trim();
+        final lastName = _lastName.text.trim();
+
+        // Create profile in Supabase
         await Supabase.instance.client.from('profiles').upsert({
           'user_id': user.id,
+          'first_name': firstName,
+          'last_name': lastName,
           'week_starts_on': 1, // default Monday
         });
+
+        // Create profile in local database
+        await ref.read(localProfileRepoProvider).createProfile(
+              userId: user.id,
+              firstName: firstName,
+              lastName: lastName,
+              weekStartsOn: 1,
+            );
       }
 
       if (mounted) Navigator.of(context).pop(); // back to sign in
@@ -49,6 +81,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   void dispose() {
+    _firstName.dispose();
+    _lastName.dispose();
     _email.dispose();
     _password.dispose();
     super.dispose();
@@ -63,6 +97,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
+              TextField(
+                controller: _firstName,
+                textCapitalization: TextCapitalization.words,
+                autofillHints: const [AutofillHints.givenName],
+                decoration: const InputDecoration(labelText: "First Name *"),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _lastName,
+                textCapitalization: TextCapitalization.words,
+                autofillHints: const [AutofillHints.familyName],
+                decoration: const InputDecoration(labelText: "Last Name *"),
+              ),
+              const SizedBox(height: 12),
               TextField(
                 controller: _email,
                 keyboardType: TextInputType.emailAddress,

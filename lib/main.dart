@@ -3,8 +3,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:habit_bucket/core/notifications/notification_bootstrap.dart';
 import 'package:habit_bucket/screens/auth/auth_gate.dart';
+import 'package:habit_bucket/screens/onboarding/onboarding_screen.dart';
 import 'package:habit_bucket/theme/app_theme.dart';
 import 'package:habit_bucket/theme/theme_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
@@ -23,10 +25,31 @@ Future<void> main() async {
   runApp(ProviderScope(child: MyApp(themeController: themeController)));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   final ThemeController themeController;
 
   const MyApp({super.key, required this.themeController});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool? _onboardingCompleted;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkOnboardingStatus();
+  }
+
+  Future<void> _checkOnboardingStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final completed = prefs.getBool('onboarding_completed') ?? false;
+    setState(() {
+      _onboardingCompleted = completed;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,17 +62,24 @@ class MyApp extends StatelessWidget {
         }
       },
       child: AnimatedBuilder(
-        animation: themeController,
+        animation: widget.themeController,
         builder: (context, _) {
           return MaterialApp(
             title: 'Habit Bucket',
             theme: AppTheme.light(),
             darkTheme: AppTheme.dark(),
-            themeMode: themeController.themeMode,
-            // home: BottomNav(themeController: themeController),
-            home: NotificationBootstrap(
-              child: AuthGate(themeController: themeController),
-            ),
+            themeMode: widget.themeController.themeMode,
+            home: _onboardingCompleted == null
+                ? const Scaffold(
+                    body: Center(child: CircularProgressIndicator()),
+                  )
+                : _onboardingCompleted!
+                    ? NotificationBootstrap(
+                        child: AuthGate(
+                          themeController: widget.themeController,
+                        ),
+                      )
+                    : const OnboardingScreen(),
           );
         },
       ),

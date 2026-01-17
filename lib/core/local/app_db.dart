@@ -59,6 +59,8 @@ class Completions extends Table {
 
 class Profile extends Table {
   TextColumn get userId => text()(); // Supabase auth uid
+  TextColumn get firstName => text()();
+  TextColumn get lastName => text()();
   IntColumn get weekStartsOn =>
       integer().withDefault(const Constant(1))(); // 1=Mon, 0=Sun
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
@@ -80,7 +82,7 @@ class AppDb extends _$AppDb {
   AppDb() : super(_openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -91,6 +93,11 @@ class AppDb extends _$AppDb {
           // Incremental migrations
           if (from < 2) {
             await m.createTable(syncState);
+          }
+          if (from < 3) {
+            // Add first_name and last_name columns to profile table
+            await m.addColumn(profile, profile.firstName);
+            await m.addColumn(profile, profile.lastName);
           }
         },
         beforeOpen: (details) async {

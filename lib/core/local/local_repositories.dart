@@ -198,6 +198,19 @@ class LocalProfileRepository {
     return q.map((row) => row?.weekStartsOn ?? 1);
   }
 
+  Stream<ProfileData?> watchProfile(String userId) {
+    final q = (db.select(
+      db.profile,
+    )..where((t) => t.userId.equals(userId))).watchSingleOrNull();
+    return q;
+  }
+
+  Future<ProfileData?> getProfile(String userId) async {
+    return await (db.select(db.profile)
+          ..where((t) => t.userId.equals(userId)))
+        .getSingleOrNull();
+  }
+
   Future<void> upsertWeekStartsOn(String userId, int value) async {
     await db
         .into(db.profile)
@@ -208,5 +221,36 @@ class LocalProfileRepository {
             updatedAt: Value(DateTime.now()),
           ),
         );
+  }
+
+  Future<void> createProfile({
+    required String userId,
+    required String firstName,
+    required String lastName,
+    int weekStartsOn = 1,
+  }) async {
+    await db.into(db.profile).insert(
+          ProfileCompanion(
+            userId: Value(userId),
+            firstName: Value(firstName),
+            lastName: Value(lastName),
+            weekStartsOn: Value(weekStartsOn),
+            updatedAt: Value(DateTime.now()),
+          ),
+        );
+  }
+
+  Future<void> updateProfileNames({
+    required String userId,
+    required String firstName,
+    required String lastName,
+  }) async {
+    await (db.update(db.profile)..where((t) => t.userId.equals(userId))).write(
+      ProfileCompanion(
+        firstName: Value(firstName),
+        lastName: Value(lastName),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
   }
 }

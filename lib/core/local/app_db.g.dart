@@ -1167,6 +1167,28 @@ class $ProfileTable extends Profile with TableInfo<$ProfileTable, ProfileData> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _firstNameMeta = const VerificationMeta(
+    'firstName',
+  );
+  @override
+  late final GeneratedColumn<String> firstName = GeneratedColumn<String>(
+    'first_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastNameMeta = const VerificationMeta(
+    'lastName',
+  );
+  @override
+  late final GeneratedColumn<String> lastName = GeneratedColumn<String>(
+    'last_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _weekStartsOnMeta = const VerificationMeta(
     'weekStartsOn',
   );
@@ -1192,7 +1214,13 @@ class $ProfileTable extends Profile with TableInfo<$ProfileTable, ProfileData> {
     defaultValue: currentDateAndTime,
   );
   @override
-  List<GeneratedColumn> get $columns => [userId, weekStartsOn, updatedAt];
+  List<GeneratedColumn> get $columns => [
+    userId,
+    firstName,
+    lastName,
+    weekStartsOn,
+    updatedAt,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1212,6 +1240,22 @@ class $ProfileTable extends Profile with TableInfo<$ProfileTable, ProfileData> {
       );
     } else if (isInserting) {
       context.missing(_userIdMeta);
+    }
+    if (data.containsKey('first_name')) {
+      context.handle(
+        _firstNameMeta,
+        firstName.isAcceptableOrUnknown(data['first_name']!, _firstNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_firstNameMeta);
+    }
+    if (data.containsKey('last_name')) {
+      context.handle(
+        _lastNameMeta,
+        lastName.isAcceptableOrUnknown(data['last_name']!, _lastNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_lastNameMeta);
     }
     if (data.containsKey('week_starts_on')) {
       context.handle(
@@ -1241,6 +1285,14 @@ class $ProfileTable extends Profile with TableInfo<$ProfileTable, ProfileData> {
         DriftSqlType.string,
         data['${effectivePrefix}user_id'],
       )!,
+      firstName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}first_name'],
+      )!,
+      lastName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_name'],
+      )!,
       weekStartsOn: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}week_starts_on'],
@@ -1260,10 +1312,14 @@ class $ProfileTable extends Profile with TableInfo<$ProfileTable, ProfileData> {
 
 class ProfileData extends DataClass implements Insertable<ProfileData> {
   final String userId;
+  final String firstName;
+  final String lastName;
   final int weekStartsOn;
   final DateTime updatedAt;
   const ProfileData({
     required this.userId,
+    required this.firstName,
+    required this.lastName,
     required this.weekStartsOn,
     required this.updatedAt,
   });
@@ -1271,6 +1327,8 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['user_id'] = Variable<String>(userId);
+    map['first_name'] = Variable<String>(firstName);
+    map['last_name'] = Variable<String>(lastName);
     map['week_starts_on'] = Variable<int>(weekStartsOn);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -1279,6 +1337,8 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
   ProfileCompanion toCompanion(bool nullToAbsent) {
     return ProfileCompanion(
       userId: Value(userId),
+      firstName: Value(firstName),
+      lastName: Value(lastName),
       weekStartsOn: Value(weekStartsOn),
       updatedAt: Value(updatedAt),
     );
@@ -1291,6 +1351,8 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ProfileData(
       userId: serializer.fromJson<String>(json['userId']),
+      firstName: serializer.fromJson<String>(json['firstName']),
+      lastName: serializer.fromJson<String>(json['lastName']),
       weekStartsOn: serializer.fromJson<int>(json['weekStartsOn']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -1300,6 +1362,8 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'userId': serializer.toJson<String>(userId),
+      'firstName': serializer.toJson<String>(firstName),
+      'lastName': serializer.toJson<String>(lastName),
       'weekStartsOn': serializer.toJson<int>(weekStartsOn),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -1307,16 +1371,22 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
 
   ProfileData copyWith({
     String? userId,
+    String? firstName,
+    String? lastName,
     int? weekStartsOn,
     DateTime? updatedAt,
   }) => ProfileData(
     userId: userId ?? this.userId,
+    firstName: firstName ?? this.firstName,
+    lastName: lastName ?? this.lastName,
     weekStartsOn: weekStartsOn ?? this.weekStartsOn,
     updatedAt: updatedAt ?? this.updatedAt,
   );
   ProfileData copyWithCompanion(ProfileCompanion data) {
     return ProfileData(
       userId: data.userId.present ? data.userId.value : this.userId,
+      firstName: data.firstName.present ? data.firstName.value : this.firstName,
+      lastName: data.lastName.present ? data.lastName.value : this.lastName,
       weekStartsOn: data.weekStartsOn.present
           ? data.weekStartsOn.value
           : this.weekStartsOn,
@@ -1328,6 +1398,8 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
   String toString() {
     return (StringBuffer('ProfileData(')
           ..write('userId: $userId, ')
+          ..write('firstName: $firstName, ')
+          ..write('lastName: $lastName, ')
           ..write('weekStartsOn: $weekStartsOn, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -1335,41 +1407,56 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
   }
 
   @override
-  int get hashCode => Object.hash(userId, weekStartsOn, updatedAt);
+  int get hashCode =>
+      Object.hash(userId, firstName, lastName, weekStartsOn, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is ProfileData &&
           other.userId == this.userId &&
+          other.firstName == this.firstName &&
+          other.lastName == this.lastName &&
           other.weekStartsOn == this.weekStartsOn &&
           other.updatedAt == this.updatedAt);
 }
 
 class ProfileCompanion extends UpdateCompanion<ProfileData> {
   final Value<String> userId;
+  final Value<String> firstName;
+  final Value<String> lastName;
   final Value<int> weekStartsOn;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const ProfileCompanion({
     this.userId = const Value.absent(),
+    this.firstName = const Value.absent(),
+    this.lastName = const Value.absent(),
     this.weekStartsOn = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ProfileCompanion.insert({
     required String userId,
+    required String firstName,
+    required String lastName,
     this.weekStartsOn = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
-  }) : userId = Value(userId);
+  }) : userId = Value(userId),
+       firstName = Value(firstName),
+       lastName = Value(lastName);
   static Insertable<ProfileData> custom({
     Expression<String>? userId,
+    Expression<String>? firstName,
+    Expression<String>? lastName,
     Expression<int>? weekStartsOn,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (userId != null) 'user_id': userId,
+      if (firstName != null) 'first_name': firstName,
+      if (lastName != null) 'last_name': lastName,
       if (weekStartsOn != null) 'week_starts_on': weekStartsOn,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -1378,12 +1465,16 @@ class ProfileCompanion extends UpdateCompanion<ProfileData> {
 
   ProfileCompanion copyWith({
     Value<String>? userId,
+    Value<String>? firstName,
+    Value<String>? lastName,
     Value<int>? weekStartsOn,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
   }) {
     return ProfileCompanion(
       userId: userId ?? this.userId,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
       weekStartsOn: weekStartsOn ?? this.weekStartsOn,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -1395,6 +1486,12 @@ class ProfileCompanion extends UpdateCompanion<ProfileData> {
     final map = <String, Expression>{};
     if (userId.present) {
       map['user_id'] = Variable<String>(userId.value);
+    }
+    if (firstName.present) {
+      map['first_name'] = Variable<String>(firstName.value);
+    }
+    if (lastName.present) {
+      map['last_name'] = Variable<String>(lastName.value);
     }
     if (weekStartsOn.present) {
       map['week_starts_on'] = Variable<int>(weekStartsOn.value);
@@ -1412,6 +1509,8 @@ class ProfileCompanion extends UpdateCompanion<ProfileData> {
   String toString() {
     return (StringBuffer('ProfileCompanion(')
           ..write('userId: $userId, ')
+          ..write('firstName: $firstName, ')
+          ..write('lastName: $lastName, ')
           ..write('weekStartsOn: $weekStartsOn, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -2197,6 +2296,8 @@ typedef $$CompletionsTableProcessedTableManager =
 typedef $$ProfileTableCreateCompanionBuilder =
     ProfileCompanion Function({
       required String userId,
+      required String firstName,
+      required String lastName,
       Value<int> weekStartsOn,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -2204,6 +2305,8 @@ typedef $$ProfileTableCreateCompanionBuilder =
 typedef $$ProfileTableUpdateCompanionBuilder =
     ProfileCompanion Function({
       Value<String> userId,
+      Value<String> firstName,
+      Value<String> lastName,
       Value<int> weekStartsOn,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -2219,6 +2322,16 @@ class $$ProfileTableFilterComposer extends Composer<_$AppDb, $ProfileTable> {
   });
   ColumnFilters<String> get userId => $composableBuilder(
     column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get firstName => $composableBuilder(
+    column: $table.firstName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastName => $composableBuilder(
+    column: $table.lastName,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2246,6 +2359,16 @@ class $$ProfileTableOrderingComposer extends Composer<_$AppDb, $ProfileTable> {
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get firstName => $composableBuilder(
+    column: $table.firstName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastName => $composableBuilder(
+    column: $table.lastName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get weekStartsOn => $composableBuilder(
     column: $table.weekStartsOn,
     builder: (column) => ColumnOrderings(column),
@@ -2268,6 +2391,12 @@ class $$ProfileTableAnnotationComposer
   });
   GeneratedColumn<String> get userId =>
       $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get firstName =>
+      $composableBuilder(column: $table.firstName, builder: (column) => column);
+
+  GeneratedColumn<String> get lastName =>
+      $composableBuilder(column: $table.lastName, builder: (column) => column);
 
   GeneratedColumn<int> get weekStartsOn => $composableBuilder(
     column: $table.weekStartsOn,
@@ -2307,11 +2436,15 @@ class $$ProfileTableTableManager
           updateCompanionCallback:
               ({
                 Value<String> userId = const Value.absent(),
+                Value<String> firstName = const Value.absent(),
+                Value<String> lastName = const Value.absent(),
                 Value<int> weekStartsOn = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ProfileCompanion(
                 userId: userId,
+                firstName: firstName,
+                lastName: lastName,
                 weekStartsOn: weekStartsOn,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -2319,11 +2452,15 @@ class $$ProfileTableTableManager
           createCompanionCallback:
               ({
                 required String userId,
+                required String firstName,
+                required String lastName,
                 Value<int> weekStartsOn = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ProfileCompanion.insert(
                 userId: userId,
+                firstName: firstName,
+                lastName: lastName,
                 weekStartsOn: weekStartsOn,
                 updatedAt: updatedAt,
                 rowid: rowid,

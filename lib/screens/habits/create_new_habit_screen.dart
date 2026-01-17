@@ -406,8 +406,7 @@ class _CreateNewHabitScreenState extends ConsumerState<CreateNewHabitScreen>
                       ),
                       8.spaceH,
 
-                      if (_selectedFrequency == HabitFrequency.daily) ...[
-                        Container(
+                      Container(
                           padding: EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.surface,
@@ -491,16 +490,6 @@ class _CreateNewHabitScreenState extends ConsumerState<CreateNewHabitScreen>
                             );
                           },
                         ),
-                      ] else ...[
-                        Text(
-                          '${_selectedFrequency == HabitFrequency.weekly ? 'Weekly' : ''}${_selectedFrequency == HabitFrequency.monthly ? 'Monthly' : ''} reminders coming soon...\nBut you can create your habit',
-                          style: TextStyle(
-                            fontSize: 12.5,
-                            color: Theme.of(context).colorScheme.outline,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
                       40.spaceH,
                     ],
                   ),
