@@ -17,6 +17,15 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _titleMeta = const VerificationMeta('title');
   @override
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
@@ -152,6 +161,7 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    userId,
     title,
     frequency,
     weeklyDay,
@@ -180,6 +190,12 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
       context.missing(_idMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
     }
     if (data.containsKey('title')) {
       context.handle(
@@ -273,6 +289,10 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
         DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      ),
       title: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}title'],
@@ -328,6 +348,7 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
 
 class Habit extends DataClass implements Insertable<Habit> {
   final String id;
+  final String? userId;
   final String title;
 
   /// 'daily' | 'weekly' | 'monthly'
@@ -353,6 +374,7 @@ class Habit extends DataClass implements Insertable<Habit> {
   final bool deleted;
   const Habit({
     required this.id,
+    this.userId,
     required this.title,
     required this.frequency,
     this.weeklyDay,
@@ -369,6 +391,9 @@ class Habit extends DataClass implements Insertable<Habit> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
     map['title'] = Variable<String>(title);
     map['frequency'] = Variable<String>(frequency);
     if (!nullToAbsent || weeklyDay != null) {
@@ -394,6 +419,9 @@ class Habit extends DataClass implements Insertable<Habit> {
   HabitsCompanion toCompanion(bool nullToAbsent) {
     return HabitsCompanion(
       id: Value(id),
+      userId: userId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(userId),
       title: Value(title),
       frequency: Value(frequency),
       weeklyDay: weeklyDay == null && nullToAbsent
@@ -423,6 +451,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Habit(
       id: serializer.fromJson<String>(json['id']),
+      userId: serializer.fromJson<String?>(json['userId']),
       title: serializer.fromJson<String>(json['title']),
       frequency: serializer.fromJson<String>(json['frequency']),
       weeklyDay: serializer.fromJson<int?>(json['weeklyDay']),
@@ -443,6 +472,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'userId': serializer.toJson<String?>(userId),
       'title': serializer.toJson<String>(title),
       'frequency': serializer.toJson<String>(frequency),
       'weeklyDay': serializer.toJson<int?>(weeklyDay),
@@ -459,6 +489,7 @@ class Habit extends DataClass implements Insertable<Habit> {
 
   Habit copyWith({
     String? id,
+    Value<String?> userId = const Value.absent(),
     String? title,
     String? frequency,
     Value<int?> weeklyDay = const Value.absent(),
@@ -472,6 +503,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     bool? deleted,
   }) => Habit(
     id: id ?? this.id,
+    userId: userId.present ? userId.value : this.userId,
     title: title ?? this.title,
     frequency: frequency ?? this.frequency,
     weeklyDay: weeklyDay.present ? weeklyDay.value : this.weeklyDay,
@@ -489,6 +521,7 @@ class Habit extends DataClass implements Insertable<Habit> {
   Habit copyWithCompanion(HabitsCompanion data) {
     return Habit(
       id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
       title: data.title.present ? data.title.value : this.title,
       frequency: data.frequency.present ? data.frequency.value : this.frequency,
       weeklyDay: data.weeklyDay.present ? data.weeklyDay.value : this.weeklyDay,
@@ -517,6 +550,7 @@ class Habit extends DataClass implements Insertable<Habit> {
   String toString() {
     return (StringBuffer('Habit(')
           ..write('id: $id, ')
+          ..write('userId: $userId, ')
           ..write('title: $title, ')
           ..write('frequency: $frequency, ')
           ..write('weeklyDay: $weeklyDay, ')
@@ -535,6 +569,7 @@ class Habit extends DataClass implements Insertable<Habit> {
   @override
   int get hashCode => Object.hash(
     id,
+    userId,
     title,
     frequency,
     weeklyDay,
@@ -552,6 +587,7 @@ class Habit extends DataClass implements Insertable<Habit> {
       identical(this, other) ||
       (other is Habit &&
           other.id == this.id &&
+          other.userId == this.userId &&
           other.title == this.title &&
           other.frequency == this.frequency &&
           other.weeklyDay == this.weeklyDay &&
@@ -567,6 +603,7 @@ class Habit extends DataClass implements Insertable<Habit> {
 
 class HabitsCompanion extends UpdateCompanion<Habit> {
   final Value<String> id;
+  final Value<String?> userId;
   final Value<String> title;
   final Value<String> frequency;
   final Value<int?> weeklyDay;
@@ -581,6 +618,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
   final Value<int> rowid;
   const HabitsCompanion({
     this.id = const Value.absent(),
+    this.userId = const Value.absent(),
     this.title = const Value.absent(),
     this.frequency = const Value.absent(),
     this.weeklyDay = const Value.absent(),
@@ -596,6 +634,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
   });
   HabitsCompanion.insert({
     required String id,
+    this.userId = const Value.absent(),
     required String title,
     required String frequency,
     this.weeklyDay = const Value.absent(),
@@ -613,6 +652,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
        frequency = Value(frequency);
   static Insertable<Habit> custom({
     Expression<String>? id,
+    Expression<String>? userId,
     Expression<String>? title,
     Expression<String>? frequency,
     Expression<int>? weeklyDay,
@@ -628,6 +668,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
       if (title != null) 'title': title,
       if (frequency != null) 'frequency': frequency,
       if (weeklyDay != null) 'weekly_day': weeklyDay,
@@ -646,6 +687,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
 
   HabitsCompanion copyWith({
     Value<String>? id,
+    Value<String?>? userId,
     Value<String>? title,
     Value<String>? frequency,
     Value<int?>? weeklyDay,
@@ -661,6 +703,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
   }) {
     return HabitsCompanion(
       id: id ?? this.id,
+      userId: userId ?? this.userId,
       title: title ?? this.title,
       frequency: frequency ?? this.frequency,
       weeklyDay: weeklyDay ?? this.weeklyDay,
@@ -681,6 +724,9 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<String>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
     }
     if (title.present) {
       map['title'] = Variable<String>(title.value);
@@ -725,6 +771,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
   String toString() {
     return (StringBuffer('HabitsCompanion(')
           ..write('id: $id, ')
+          ..write('userId: $userId, ')
           ..write('title: $title, ')
           ..write('frequency: $frequency, ')
           ..write('weeklyDay: $weeklyDay, ')
@@ -756,6 +803,15 @@ class $CompletionsTable extends Completions
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _habitIdMeta = const VerificationMeta(
     'habitId',
@@ -821,6 +877,7 @@ class $CompletionsTable extends Completions
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    userId,
     habitId,
     periodKey,
     createdAt,
@@ -843,6 +900,12 @@ class $CompletionsTable extends Completions
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
       context.missing(_idMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
     }
     if (data.containsKey('habit_id')) {
       context.handle(
@@ -895,6 +958,10 @@ class $CompletionsTable extends Completions
         DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      ),
       habitId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}habit_id'],
@@ -926,6 +993,7 @@ class $CompletionsTable extends Completions
 
 class Completion extends DataClass implements Insertable<Completion> {
   final String id;
+  final String? userId;
   final String habitId;
   final DateTime periodKey;
   final DateTime createdAt;
@@ -933,6 +1001,7 @@ class Completion extends DataClass implements Insertable<Completion> {
   final bool deleted;
   const Completion({
     required this.id,
+    this.userId,
     required this.habitId,
     required this.periodKey,
     required this.createdAt,
@@ -943,6 +1012,9 @@ class Completion extends DataClass implements Insertable<Completion> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
     map['habit_id'] = Variable<String>(habitId);
     map['period_key'] = Variable<DateTime>(periodKey);
     map['created_at'] = Variable<DateTime>(createdAt);
@@ -954,6 +1026,9 @@ class Completion extends DataClass implements Insertable<Completion> {
   CompletionsCompanion toCompanion(bool nullToAbsent) {
     return CompletionsCompanion(
       id: Value(id),
+      userId: userId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(userId),
       habitId: Value(habitId),
       periodKey: Value(periodKey),
       createdAt: Value(createdAt),
@@ -969,6 +1044,7 @@ class Completion extends DataClass implements Insertable<Completion> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Completion(
       id: serializer.fromJson<String>(json['id']),
+      userId: serializer.fromJson<String?>(json['userId']),
       habitId: serializer.fromJson<String>(json['habitId']),
       periodKey: serializer.fromJson<DateTime>(json['periodKey']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -981,6 +1057,7 @@ class Completion extends DataClass implements Insertable<Completion> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'userId': serializer.toJson<String?>(userId),
       'habitId': serializer.toJson<String>(habitId),
       'periodKey': serializer.toJson<DateTime>(periodKey),
       'createdAt': serializer.toJson<DateTime>(createdAt),
@@ -991,6 +1068,7 @@ class Completion extends DataClass implements Insertable<Completion> {
 
   Completion copyWith({
     String? id,
+    Value<String?> userId = const Value.absent(),
     String? habitId,
     DateTime? periodKey,
     DateTime? createdAt,
@@ -998,6 +1076,7 @@ class Completion extends DataClass implements Insertable<Completion> {
     bool? deleted,
   }) => Completion(
     id: id ?? this.id,
+    userId: userId.present ? userId.value : this.userId,
     habitId: habitId ?? this.habitId,
     periodKey: periodKey ?? this.periodKey,
     createdAt: createdAt ?? this.createdAt,
@@ -1007,6 +1086,7 @@ class Completion extends DataClass implements Insertable<Completion> {
   Completion copyWithCompanion(CompletionsCompanion data) {
     return Completion(
       id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
       habitId: data.habitId.present ? data.habitId.value : this.habitId,
       periodKey: data.periodKey.present ? data.periodKey.value : this.periodKey,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
@@ -1019,6 +1099,7 @@ class Completion extends DataClass implements Insertable<Completion> {
   String toString() {
     return (StringBuffer('Completion(')
           ..write('id: $id, ')
+          ..write('userId: $userId, ')
           ..write('habitId: $habitId, ')
           ..write('periodKey: $periodKey, ')
           ..write('createdAt: $createdAt, ')
@@ -1029,13 +1110,21 @@ class Completion extends DataClass implements Insertable<Completion> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, habitId, periodKey, createdAt, updatedAt, deleted);
+  int get hashCode => Object.hash(
+    id,
+    userId,
+    habitId,
+    periodKey,
+    createdAt,
+    updatedAt,
+    deleted,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Completion &&
           other.id == this.id &&
+          other.userId == this.userId &&
           other.habitId == this.habitId &&
           other.periodKey == this.periodKey &&
           other.createdAt == this.createdAt &&
@@ -1045,6 +1134,7 @@ class Completion extends DataClass implements Insertable<Completion> {
 
 class CompletionsCompanion extends UpdateCompanion<Completion> {
   final Value<String> id;
+  final Value<String?> userId;
   final Value<String> habitId;
   final Value<DateTime> periodKey;
   final Value<DateTime> createdAt;
@@ -1053,6 +1143,7 @@ class CompletionsCompanion extends UpdateCompanion<Completion> {
   final Value<int> rowid;
   const CompletionsCompanion({
     this.id = const Value.absent(),
+    this.userId = const Value.absent(),
     this.habitId = const Value.absent(),
     this.periodKey = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -1062,6 +1153,7 @@ class CompletionsCompanion extends UpdateCompanion<Completion> {
   });
   CompletionsCompanion.insert({
     required String id,
+    this.userId = const Value.absent(),
     required String habitId,
     required DateTime periodKey,
     this.createdAt = const Value.absent(),
@@ -1073,6 +1165,7 @@ class CompletionsCompanion extends UpdateCompanion<Completion> {
        periodKey = Value(periodKey);
   static Insertable<Completion> custom({
     Expression<String>? id,
+    Expression<String>? userId,
     Expression<String>? habitId,
     Expression<DateTime>? periodKey,
     Expression<DateTime>? createdAt,
@@ -1082,6 +1175,7 @@ class CompletionsCompanion extends UpdateCompanion<Completion> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
       if (habitId != null) 'habit_id': habitId,
       if (periodKey != null) 'period_key': periodKey,
       if (createdAt != null) 'created_at': createdAt,
@@ -1093,6 +1187,7 @@ class CompletionsCompanion extends UpdateCompanion<Completion> {
 
   CompletionsCompanion copyWith({
     Value<String>? id,
+    Value<String?>? userId,
     Value<String>? habitId,
     Value<DateTime>? periodKey,
     Value<DateTime>? createdAt,
@@ -1102,6 +1197,7 @@ class CompletionsCompanion extends UpdateCompanion<Completion> {
   }) {
     return CompletionsCompanion(
       id: id ?? this.id,
+      userId: userId ?? this.userId,
       habitId: habitId ?? this.habitId,
       periodKey: periodKey ?? this.periodKey,
       createdAt: createdAt ?? this.createdAt,
@@ -1116,6 +1212,9 @@ class CompletionsCompanion extends UpdateCompanion<Completion> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<String>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
     }
     if (habitId.present) {
       map['habit_id'] = Variable<String>(habitId.value);
@@ -1142,6 +1241,7 @@ class CompletionsCompanion extends UpdateCompanion<Completion> {
   String toString() {
     return (StringBuffer('CompletionsCompanion(')
           ..write('id: $id, ')
+          ..write('userId: $userId, ')
           ..write('habitId: $habitId, ')
           ..write('periodKey: $periodKey, ')
           ..write('createdAt: $createdAt, ')
@@ -1176,7 +1276,8 @@ class $ProfileTable extends Profile with TableInfo<$ProfileTable, ProfileData> {
     aliasedName,
     false,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
   );
   static const VerificationMeta _lastNameMeta = const VerificationMeta(
     'lastName',
@@ -1187,7 +1288,8 @@ class $ProfileTable extends Profile with TableInfo<$ProfileTable, ProfileData> {
     aliasedName,
     false,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
   );
   static const VerificationMeta _weekStartsOnMeta = const VerificationMeta(
     'weekStartsOn',
@@ -1200,6 +1302,18 @@ class $ProfileTable extends Profile with TableInfo<$ProfileTable, ProfileData> {
     type: DriftSqlType.int,
     requiredDuringInsert: false,
     defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
   );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
@@ -1219,6 +1333,7 @@ class $ProfileTable extends Profile with TableInfo<$ProfileTable, ProfileData> {
     firstName,
     lastName,
     weekStartsOn,
+    createdAt,
     updatedAt,
   ];
   @override
@@ -1246,16 +1361,12 @@ class $ProfileTable extends Profile with TableInfo<$ProfileTable, ProfileData> {
         _firstNameMeta,
         firstName.isAcceptableOrUnknown(data['first_name']!, _firstNameMeta),
       );
-    } else if (isInserting) {
-      context.missing(_firstNameMeta);
     }
     if (data.containsKey('last_name')) {
       context.handle(
         _lastNameMeta,
         lastName.isAcceptableOrUnknown(data['last_name']!, _lastNameMeta),
       );
-    } else if (isInserting) {
-      context.missing(_lastNameMeta);
     }
     if (data.containsKey('week_starts_on')) {
       context.handle(
@@ -1264,6 +1375,12 @@ class $ProfileTable extends Profile with TableInfo<$ProfileTable, ProfileData> {
           data['week_starts_on']!,
           _weekStartsOnMeta,
         ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
       );
     }
     if (data.containsKey('updated_at')) {
@@ -1297,6 +1414,10 @@ class $ProfileTable extends Profile with TableInfo<$ProfileTable, ProfileData> {
         DriftSqlType.int,
         data['${effectivePrefix}week_starts_on'],
       )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
       updatedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
@@ -1315,12 +1436,14 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
   final String firstName;
   final String lastName;
   final int weekStartsOn;
+  final DateTime createdAt;
   final DateTime updatedAt;
   const ProfileData({
     required this.userId,
     required this.firstName,
     required this.lastName,
     required this.weekStartsOn,
+    required this.createdAt,
     required this.updatedAt,
   });
   @override
@@ -1330,6 +1453,7 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
     map['first_name'] = Variable<String>(firstName);
     map['last_name'] = Variable<String>(lastName);
     map['week_starts_on'] = Variable<int>(weekStartsOn);
+    map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
@@ -1340,6 +1464,7 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
       firstName: Value(firstName),
       lastName: Value(lastName),
       weekStartsOn: Value(weekStartsOn),
+      createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
   }
@@ -1354,6 +1479,7 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
       firstName: serializer.fromJson<String>(json['firstName']),
       lastName: serializer.fromJson<String>(json['lastName']),
       weekStartsOn: serializer.fromJson<int>(json['weekStartsOn']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
@@ -1365,6 +1491,7 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
       'firstName': serializer.toJson<String>(firstName),
       'lastName': serializer.toJson<String>(lastName),
       'weekStartsOn': serializer.toJson<int>(weekStartsOn),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
@@ -1374,12 +1501,14 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
     String? firstName,
     String? lastName,
     int? weekStartsOn,
+    DateTime? createdAt,
     DateTime? updatedAt,
   }) => ProfileData(
     userId: userId ?? this.userId,
     firstName: firstName ?? this.firstName,
     lastName: lastName ?? this.lastName,
     weekStartsOn: weekStartsOn ?? this.weekStartsOn,
+    createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
   ProfileData copyWithCompanion(ProfileCompanion data) {
@@ -1390,6 +1519,7 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
       weekStartsOn: data.weekStartsOn.present
           ? data.weekStartsOn.value
           : this.weekStartsOn,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
@@ -1401,14 +1531,21 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
           ..write('firstName: $firstName, ')
           ..write('lastName: $lastName, ')
           ..write('weekStartsOn: $weekStartsOn, ')
+          ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(userId, firstName, lastName, weekStartsOn, updatedAt);
+  int get hashCode => Object.hash(
+    userId,
+    firstName,
+    lastName,
+    weekStartsOn,
+    createdAt,
+    updatedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1417,6 +1554,7 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
           other.firstName == this.firstName &&
           other.lastName == this.lastName &&
           other.weekStartsOn == this.weekStartsOn &&
+          other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
 
@@ -1425,6 +1563,7 @@ class ProfileCompanion extends UpdateCompanion<ProfileData> {
   final Value<String> firstName;
   final Value<String> lastName;
   final Value<int> weekStartsOn;
+  final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const ProfileCompanion({
@@ -1432,24 +1571,25 @@ class ProfileCompanion extends UpdateCompanion<ProfileData> {
     this.firstName = const Value.absent(),
     this.lastName = const Value.absent(),
     this.weekStartsOn = const Value.absent(),
+    this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ProfileCompanion.insert({
     required String userId,
-    required String firstName,
-    required String lastName,
+    this.firstName = const Value.absent(),
+    this.lastName = const Value.absent(),
     this.weekStartsOn = const Value.absent(),
+    this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
-  }) : userId = Value(userId),
-       firstName = Value(firstName),
-       lastName = Value(lastName);
+  }) : userId = Value(userId);
   static Insertable<ProfileData> custom({
     Expression<String>? userId,
     Expression<String>? firstName,
     Expression<String>? lastName,
     Expression<int>? weekStartsOn,
+    Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
@@ -1458,6 +1598,7 @@ class ProfileCompanion extends UpdateCompanion<ProfileData> {
       if (firstName != null) 'first_name': firstName,
       if (lastName != null) 'last_name': lastName,
       if (weekStartsOn != null) 'week_starts_on': weekStartsOn,
+      if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -1468,6 +1609,7 @@ class ProfileCompanion extends UpdateCompanion<ProfileData> {
     Value<String>? firstName,
     Value<String>? lastName,
     Value<int>? weekStartsOn,
+    Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
   }) {
@@ -1476,6 +1618,7 @@ class ProfileCompanion extends UpdateCompanion<ProfileData> {
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
       weekStartsOn: weekStartsOn ?? this.weekStartsOn,
+      createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
     );
@@ -1496,6 +1639,9 @@ class ProfileCompanion extends UpdateCompanion<ProfileData> {
     if (weekStartsOn.present) {
       map['week_starts_on'] = Variable<int>(weekStartsOn.value);
     }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
@@ -1512,6 +1658,7 @@ class ProfileCompanion extends UpdateCompanion<ProfileData> {
           ..write('firstName: $firstName, ')
           ..write('lastName: $lastName, ')
           ..write('weekStartsOn: $weekStartsOn, ')
+          ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -1749,6 +1896,7 @@ abstract class _$AppDb extends GeneratedDatabase {
 typedef $$HabitsTableCreateCompanionBuilder =
     HabitsCompanion Function({
       required String id,
+      Value<String?> userId,
       required String title,
       required String frequency,
       Value<int?> weeklyDay,
@@ -1765,6 +1913,7 @@ typedef $$HabitsTableCreateCompanionBuilder =
 typedef $$HabitsTableUpdateCompanionBuilder =
     HabitsCompanion Function({
       Value<String> id,
+      Value<String?> userId,
       Value<String> title,
       Value<String> frequency,
       Value<int?> weeklyDay,
@@ -1789,6 +1938,11 @@ class $$HabitsTableFilterComposer extends Composer<_$AppDb, $HabitsTable> {
   });
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1861,6 +2015,11 @@ class $$HabitsTableOrderingComposer extends Composer<_$AppDb, $HabitsTable> {
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get title => $composableBuilder(
     column: $table.title,
     builder: (column) => ColumnOrderings(column),
@@ -1927,6 +2086,9 @@ class $$HabitsTableAnnotationComposer extends Composer<_$AppDb, $HabitsTable> {
   });
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
 
   GeneratedColumn<String> get title =>
       $composableBuilder(column: $table.title, builder: (column) => column);
@@ -2001,6 +2163,7 @@ class $$HabitsTableTableManager
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
+                Value<String?> userId = const Value.absent(),
                 Value<String> title = const Value.absent(),
                 Value<String> frequency = const Value.absent(),
                 Value<int?> weeklyDay = const Value.absent(),
@@ -2015,6 +2178,7 @@ class $$HabitsTableTableManager
                 Value<int> rowid = const Value.absent(),
               }) => HabitsCompanion(
                 id: id,
+                userId: userId,
                 title: title,
                 frequency: frequency,
                 weeklyDay: weeklyDay,
@@ -2031,6 +2195,7 @@ class $$HabitsTableTableManager
           createCompanionCallback:
               ({
                 required String id,
+                Value<String?> userId = const Value.absent(),
                 required String title,
                 required String frequency,
                 Value<int?> weeklyDay = const Value.absent(),
@@ -2045,6 +2210,7 @@ class $$HabitsTableTableManager
                 Value<int> rowid = const Value.absent(),
               }) => HabitsCompanion.insert(
                 id: id,
+                userId: userId,
                 title: title,
                 frequency: frequency,
                 weeklyDay: weeklyDay,
@@ -2083,6 +2249,7 @@ typedef $$HabitsTableProcessedTableManager =
 typedef $$CompletionsTableCreateCompanionBuilder =
     CompletionsCompanion Function({
       required String id,
+      Value<String?> userId,
       required String habitId,
       required DateTime periodKey,
       Value<DateTime> createdAt,
@@ -2093,6 +2260,7 @@ typedef $$CompletionsTableCreateCompanionBuilder =
 typedef $$CompletionsTableUpdateCompanionBuilder =
     CompletionsCompanion Function({
       Value<String> id,
+      Value<String?> userId,
       Value<String> habitId,
       Value<DateTime> periodKey,
       Value<DateTime> createdAt,
@@ -2112,6 +2280,11 @@ class $$CompletionsTableFilterComposer
   });
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2155,6 +2328,11 @@ class $$CompletionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get habitId => $composableBuilder(
     column: $table.habitId,
     builder: (column) => ColumnOrderings(column),
@@ -2192,6 +2370,9 @@ class $$CompletionsTableAnnotationComposer
   });
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
 
   GeneratedColumn<String> get habitId =>
       $composableBuilder(column: $table.habitId, builder: (column) => column);
@@ -2238,6 +2419,7 @@ class $$CompletionsTableTableManager
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
+                Value<String?> userId = const Value.absent(),
                 Value<String> habitId = const Value.absent(),
                 Value<DateTime> periodKey = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
@@ -2246,6 +2428,7 @@ class $$CompletionsTableTableManager
                 Value<int> rowid = const Value.absent(),
               }) => CompletionsCompanion(
                 id: id,
+                userId: userId,
                 habitId: habitId,
                 periodKey: periodKey,
                 createdAt: createdAt,
@@ -2256,6 +2439,7 @@ class $$CompletionsTableTableManager
           createCompanionCallback:
               ({
                 required String id,
+                Value<String?> userId = const Value.absent(),
                 required String habitId,
                 required DateTime periodKey,
                 Value<DateTime> createdAt = const Value.absent(),
@@ -2264,6 +2448,7 @@ class $$CompletionsTableTableManager
                 Value<int> rowid = const Value.absent(),
               }) => CompletionsCompanion.insert(
                 id: id,
+                userId: userId,
                 habitId: habitId,
                 periodKey: periodKey,
                 createdAt: createdAt,
@@ -2296,9 +2481,10 @@ typedef $$CompletionsTableProcessedTableManager =
 typedef $$ProfileTableCreateCompanionBuilder =
     ProfileCompanion Function({
       required String userId,
-      required String firstName,
-      required String lastName,
+      Value<String> firstName,
+      Value<String> lastName,
       Value<int> weekStartsOn,
+      Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
     });
@@ -2308,6 +2494,7 @@ typedef $$ProfileTableUpdateCompanionBuilder =
       Value<String> firstName,
       Value<String> lastName,
       Value<int> weekStartsOn,
+      Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
     });
@@ -2337,6 +2524,11 @@ class $$ProfileTableFilterComposer extends Composer<_$AppDb, $ProfileTable> {
 
   ColumnFilters<int> get weekStartsOn => $composableBuilder(
     column: $table.weekStartsOn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2374,6 +2566,11 @@ class $$ProfileTableOrderingComposer extends Composer<_$AppDb, $ProfileTable> {
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
@@ -2402,6 +2599,9 @@ class $$ProfileTableAnnotationComposer
     column: $table.weekStartsOn,
     builder: (column) => column,
   );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
@@ -2439,6 +2639,7 @@ class $$ProfileTableTableManager
                 Value<String> firstName = const Value.absent(),
                 Value<String> lastName = const Value.absent(),
                 Value<int> weekStartsOn = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ProfileCompanion(
@@ -2446,15 +2647,17 @@ class $$ProfileTableTableManager
                 firstName: firstName,
                 lastName: lastName,
                 weekStartsOn: weekStartsOn,
+                createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
                 required String userId,
-                required String firstName,
-                required String lastName,
+                Value<String> firstName = const Value.absent(),
+                Value<String> lastName = const Value.absent(),
                 Value<int> weekStartsOn = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ProfileCompanion.insert(
@@ -2462,6 +2665,7 @@ class $$ProfileTableTableManager
                 firstName: firstName,
                 lastName: lastName,
                 weekStartsOn: weekStartsOn,
+                createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),

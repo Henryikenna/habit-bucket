@@ -8,6 +8,7 @@ part 'app_db.g.dart';
 
 class Habits extends Table {
   TextColumn get id => text()(); // UUID
+  TextColumn get userId => text().nullable()(); // Supabase auth uid (populated on sync)
   TextColumn get title => text()();
 
   /// 'daily' | 'weekly' | 'monthly'
@@ -40,6 +41,7 @@ class Habits extends Table {
 
 class Completions extends Table {
   TextColumn get id => text()(); // UUID
+  TextColumn get userId => text().nullable()(); // Supabase auth uid (populated on sync)
   TextColumn get habitId => text()();
   DateTimeColumn get periodKey => dateTime()(); // normalized to midnight local
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
@@ -59,10 +61,11 @@ class Completions extends Table {
 
 class Profile extends Table {
   TextColumn get userId => text()(); // Supabase auth uid
-  TextColumn get firstName => text()();
-  TextColumn get lastName => text()();
+  TextColumn get firstName => text().withDefault(const Constant(''))();
+  TextColumn get lastName => text().withDefault(const Constant(''))();
   IntColumn get weekStartsOn =>
       integer().withDefault(const Constant(1))(); // 1=Mon, 0=Sun
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
@@ -82,7 +85,7 @@ class AppDb extends _$AppDb {
   AppDb() : super(_openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -98,6 +101,13 @@ class AppDb extends _$AppDb {
             // Add first_name and last_name columns to profile table
             await m.addColumn(profile, profile.firstName);
             await m.addColumn(profile, profile.lastName);
+          }
+          if (from < 4) {
+            // Add userId to habits and completions for sync
+            await m.addColumn(habits, habits.userId);
+            await m.addColumn(completions, completions.userId);
+            // Add createdAt to profile
+            await m.addColumn(profile, profile.createdAt);
           }
         },
         beforeOpen: (details) async {

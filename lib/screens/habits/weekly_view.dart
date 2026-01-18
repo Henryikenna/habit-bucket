@@ -227,7 +227,7 @@ class WeeklyView extends ConsumerWidget {
                   },
                 ),
               );
-            }).toList(),
+            }),
           ],
         );
       },

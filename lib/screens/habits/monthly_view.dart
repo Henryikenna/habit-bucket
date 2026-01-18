@@ -118,7 +118,7 @@ class MonthlyView extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "${day}${_getDaySuffix(day)} of the month",
+                    "$day${_getDaySuffix(day)} of the month",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -241,7 +241,7 @@ class MonthlyView extends ConsumerWidget {
                   },
                 ),
               );
-            }).toList(),
+            }),
           ],
         );
       },

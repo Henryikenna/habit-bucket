@@ -29,16 +29,16 @@ class StreaksList extends ConsumerWidget {
                 child: Text(
                   "Create a habit to start tracking streaks.",
                   style: TextStyle(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacityFactor(0.7),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacityFactor(0.7),
                   ),
                 ),
               );
             }
 
             return ListView.separated(
+              shrinkWrap: true,
               padding: const EdgeInsets.only(bottom: 24),
               itemCount: habits.length,
               separatorBuilder: (_, __) => 10.spaceH,
@@ -55,7 +55,9 @@ class StreaksList extends ConsumerWidget {
                         height: 40,
                         width: 40,
                         decoration: BoxDecoration(
-                          color: HabitBucketColors.mainPurple.withOpacityFactor(0.12),
+                          color: HabitBucketColors.mainPurple.withOpacityFactor(
+                            0.12,
+                          ),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Icon(
@@ -83,10 +85,9 @@ class StreaksList extends ConsumerWidget {
                               "${h.frequency} • longest $longest",
                               style: TextStyle(
                                 fontSize: 12.5,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurface
-                                    .withOpacityFactor(0.65),
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withOpacityFactor(0.65),
                               ),
                             ),
                           ],
@@ -94,7 +95,10 @@ class StreaksList extends ConsumerWidget {
                       ),
                       12.spaceW,
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(999),
                           border: Border.all(

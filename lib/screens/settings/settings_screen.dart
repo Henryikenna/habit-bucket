@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:habit_bucket/providers/providers.dart';
+import 'package:habit_bucket/providers/theme_controller_provider.dart';
 import 'package:habit_bucket/theme/theme_controller.dart';
 import 'package:habit_bucket/utils/spacing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SettingsScreen extends ConsumerWidget {
-  final ThemeController themeController;
+  const SettingsScreen({super.key});
 
-  const SettingsScreen({super.key, required this.themeController});
-
-  void _showEditNameDialog(BuildContext context, WidgetRef ref, String currentFirstName, String currentLastName) {
+  void _showEditNameDialog(
+    BuildContext context,
+    WidgetRef ref,
+    String currentFirstName,
+    String currentLastName,
+  ) {
     final firstNameController = TextEditingController(text: currentFirstName);
     final lastNameController = TextEditingController(text: currentLastName);
 
@@ -57,18 +61,23 @@ class SettingsScreen extends ConsumerWidget {
                   if (userId == null) return;
 
                   // Update local database
-                  await ref.read(localProfileRepoProvider).updateProfileNames(
+                  await ref
+                      .read(localProfileRepoProvider)
+                      .updateProfileNames(
                         userId: userId,
                         firstName: firstName,
                         lastName: lastName,
                       );
 
                   // Update Supabase
-                  await Supabase.instance.client.from('profiles').update({
-                    'first_name': firstName,
-                    'last_name': lastName,
-                    'updated_at': DateTime.now().toIso8601String(),
-                  }).eq('user_id', userId);
+                  await Supabase.instance.client
+                      .from('profiles')
+                      .update({
+                        'first_name': firstName,
+                        'last_name': lastName,
+                        'updated_at': DateTime.now().toIso8601String(),
+                      })
+                      .eq('user_id', userId);
 
                   if (dialogContext.mounted) {
                     Navigator.of(dialogContext).pop();
@@ -99,6 +108,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(userProfileProvider);
     final profile = profileAsync.value;
+    final themeController = ref.watch(themeControllerProvider);
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -130,11 +140,11 @@ class SettingsScreen extends ConsumerWidget {
                     trailing: const Icon(Icons.edit),
                     onTap: profile != null
                         ? () => _showEditNameDialog(
-                              context,
-                              ref,
-                              profile.firstName,
-                              profile.lastName,
-                            )
+                            context,
+                            ref,
+                            profile.firstName,
+                            profile.lastName,
+                          )
                         : null,
                   ),
 
@@ -156,9 +166,7 @@ class SettingsScreen extends ConsumerWidget {
                     child: Column(
                       children: const [
                         RadioListTile<AppThemeSetting>(
-                          title: Text(
-                            "Auto (Dark after 7pm, Light after 7am)",
-                          ),
+                          title: Text("Auto (Dark after 7pm, Light after 7am)"),
                           value: AppThemeSetting.auto,
                         ),
                         RadioListTile<AppThemeSetting>(

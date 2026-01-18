@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:habit_bucket/bottom_nav.dart';
 import 'package:habit_bucket/screens/auth/sign_up_screen.dart';
 import 'package:habit_bucket/utils/opacity.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -23,10 +24,18 @@ class _SignInScreenState extends State<SignInScreen> {
     });
 
     try {
-      await Supabase.instance.client.auth.signInWithPassword(
+      final resp = await Supabase.instance.client.auth.signInWithPassword(
         email: _email.text.trim(),
         password: _password.text,
       );
+
+      if (resp.user != null && resp.session != null) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => BottomNav()),
+          (route) => false,
+        );
+      }
     } on AuthException catch (e) {
       setState(() => _error = e.message);
     } catch (e) {

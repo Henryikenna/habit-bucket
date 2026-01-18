@@ -101,14 +101,14 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 controller: _firstName,
                 textCapitalization: TextCapitalization.words,
                 autofillHints: const [AutofillHints.givenName],
-                decoration: const InputDecoration(labelText: "First Name *"),
+                decoration: const InputDecoration(labelText: "First Name"),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: _lastName,
                 textCapitalization: TextCapitalization.words,
                 autofillHints: const [AutofillHints.familyName],
-                decoration: const InputDecoration(labelText: "Last Name *"),
+                decoration: const InputDecoration(labelText: "Last Name"),
               ),
               const SizedBox(height: 12),
               TextField(

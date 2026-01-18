@@ -4,13 +4,11 @@ import 'package:habit_bucket/models/bottom_nav_widget_model.dart';
 import 'package:habit_bucket/screens/habits/habits_screen.dart';
 import 'package:habit_bucket/screens/settings/settings_screen.dart';
 import 'package:habit_bucket/screens/stats/stats_screen.dart';
-import 'package:habit_bucket/theme/theme_controller.dart';
 import 'package:habit_bucket/utils/opacity.dart';
 
 class BottomNav extends StatefulWidget {
-  final ThemeController themeController;
 
-  const BottomNav({super.key, required this.themeController});
+  const BottomNav({super.key});
 
   @override
   State<BottomNav> createState() => _BottomNavState();
@@ -39,7 +37,7 @@ class _BottomNavState extends State<BottomNav> {
       BottomNavWidgetModel(
         name: "Settings",
         icon: const FaIcon(FontAwesomeIcons.gear),
-        widget: SettingsScreen(themeController: widget.themeController),
+        widget: SettingsScreen(),
       ),
     ];
   }

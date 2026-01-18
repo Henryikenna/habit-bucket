@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,7 +51,9 @@ class _HabitsScreenState extends ConsumerState<HabitsScreen>
     // Filter habits based on frequency
     final dailyHabits = habits.where((h) => h.frequency == 'daily').toList();
     final weeklyHabits = habits.where((h) => h.frequency == 'weekly').toList();
-    final monthlyHabits = habits.where((h) => h.frequency == 'monthly').toList();
+    final monthlyHabits = habits
+        .where((h) => h.frequency == 'monthly')
+        .toList();
 
     List<Widget> viewsList = [
       DailyView(
@@ -336,6 +339,8 @@ class _HabitsScreenState extends ConsumerState<HabitsScreen>
                             HabitFrequency.monthly => f == 'monthly',
                           };
                         }).toList();
+
+
 
                         return AnimatedSwitcher(
                           duration: Duration(milliseconds: 300),

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:habit_bucket/core/notifications/notification_bootstrap.dart';
+import 'package:habit_bucket/providers/theme_controller_provider.dart';
 import 'package:habit_bucket/screens/auth/auth_gate.dart';
 import 'package:habit_bucket/screens/onboarding/onboarding_screen.dart';
 import 'package:habit_bucket/theme/app_theme.dart';
-import 'package:habit_bucket/theme/theme_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -19,22 +19,17 @@ Future<void> main() async {
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
-  final themeController = ThemeController();
-  await themeController.load();
-
-  runApp(ProviderScope(child: MyApp(themeController: themeController)));
+  runApp(ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatefulWidget {
-  final ThemeController themeController;
-
-  const MyApp({super.key, required this.themeController});
+class MyApp extends ConsumerStatefulWidget {
+  const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends ConsumerState<MyApp> {
   bool? _onboardingCompleted;
 
   @override
@@ -53,6 +48,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final themeController = ref.watch(themeControllerProvider);
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
@@ -62,24 +58,22 @@ class _MyAppState extends State<MyApp> {
         }
       },
       child: AnimatedBuilder(
-        animation: widget.themeController,
+        animation: themeController,
         builder: (context, _) {
           return MaterialApp(
             title: 'Habit Bucket',
             theme: AppTheme.light(),
             darkTheme: AppTheme.dark(),
-            themeMode: widget.themeController.themeMode,
+            themeMode: themeController.themeMode,
             home: _onboardingCompleted == null
                 ? const Scaffold(
                     body: Center(child: CircularProgressIndicator()),
                   )
                 : _onboardingCompleted!
-                    ? NotificationBootstrap(
-                        child: AuthGate(
-                          themeController: widget.themeController,
-                        ),
-                      )
-                    : const OnboardingScreen(),
+                ? NotificationBootstrap(
+                    child: AuthGate(),
+                  )
+                : const OnboardingScreen(),
           );
         },
       ),

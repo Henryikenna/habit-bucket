@@ -5,13 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:habit_bucket/bottom_nav.dart';
 import 'package:habit_bucket/providers/providers.dart';
 import 'package:habit_bucket/screens/auth/sign_in_screen.dart';
-import 'package:habit_bucket/theme/theme_controller.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthGate extends ConsumerStatefulWidget {
-  final ThemeController themeController;
-
-  const AuthGate({super.key, required this.themeController});
+  const AuthGate({super.key});
 
   @override
   ConsumerState<AuthGate> createState() => _AuthGateState();
@@ -43,6 +40,6 @@ class _AuthGateState extends ConsumerState<AuthGate> {
       return const SignInScreen();
     }
 
-    return BottomNav(themeController: widget.themeController);
+    return BottomNav();
   }
 }
