@@ -190,13 +190,16 @@ class DailyView extends ConsumerWidget {
                         habitFrequency: getHabitFrequencyEnum(
                           habitFrequency: habit.frequency,
                         ),
-                        onMenuTap: () {
+                        onEditTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (_) => EditHabitScreen(habitId: habit.id),
+                              builder: (_) =>
+                                  EditHabitScreen(habitId: habit.id),
                             ),
                           );
+                          // show
                         },
+                        onDeleteTap: () {},
                         onToggle: () async {
                           final repo = ref.read(localCompletionRepoProvider);
                           final locks = ref.read(

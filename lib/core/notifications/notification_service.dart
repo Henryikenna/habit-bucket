@@ -40,10 +40,43 @@ class NotificationService {
     await androidImpl?.requestNotificationsPermission();
   }
 
+  /// Show an immediate test notification to verify notifications are working
+  Future<void> showTestNotification() async {
+    print('🧪 [NotificationService] Showing test notification NOW');
+
+    await _plugin.show(
+      999999, // Use a unique ID for test notifications
+      'Test Notification',
+      'If you see this, notifications are working! 🎉',
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          channelId,
+          channelName,
+          channelDescription: channelDesc,
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
+      ),
+      payload: 'test',
+    );
+
+    print('   ✅ Test notification sent');
+  }
+
   Future<void> scheduleHabit(Habit h) async {
-    if (h.deleted) return;
+    print('📅 [NotificationService] scheduleHabit called for: ${h.title}');
+    print('   - frequency: ${h.frequency}');
+    print('   - reminderEnabled: ${h.reminderEnabled}');
+    print('   - reminderRandom: ${h.reminderRandom}');
+    print('   - reminderTimeMinutes: ${h.reminderTimeMinutes}');
+
+    if (h.deleted) {
+      print('   ⏭️  Skipped (deleted)');
+      return;
+    }
 
     if (!(h.reminderEnabled)) {
+      print('   ⏭️  Canceling (reminders disabled)');
       await cancelHabit(h);
       return;
     }
@@ -51,6 +84,7 @@ class NotificationService {
     // Recreate schedule for the next horizon window
     await cancelHabit(h);
 
+    int scheduledCount = 0;
     for (int i = 0; i < horizonDays; i++) {
       final day = DateTime.now().add(Duration(days: i));
 
@@ -61,7 +95,10 @@ class NotificationService {
 
       final fireAt = _fireTimeForDay(h, day);
 
-      if (fireAt.isBefore(DateTime.now())) continue;
+      if (fireAt.isBefore(DateTime.now())) {
+        print('   ⏭️  Skipped ${day.toIso8601String().split('T')[0]} - time already passed');
+        continue;
+      }
 
       final id = _notificationId(h.id, day);
 
@@ -85,7 +122,12 @@ class NotificationService {
         //     UILocalNotificationDateInterpretation.absoluteTime,
         payload: 'habit:${h.id}',
       );
+
+      scheduledCount++;
+      print('   ✅ Scheduled for ${day.toIso8601String().split('T')[0]} at ${fireAt.hour}:${fireAt.minute.toString().padLeft(2, '0')}');
     }
+
+    print('   📊 Total notifications scheduled: $scheduledCount');
   }
 
   /// Check if we should schedule a notification for this day based on habit frequency

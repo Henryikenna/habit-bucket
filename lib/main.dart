@@ -65,6 +65,7 @@ class _MyAppState extends ConsumerState<MyApp> {
             theme: AppTheme.light(),
             darkTheme: AppTheme.dark(),
             themeMode: themeController.themeMode,
+            debugShowCheckedModeBanner: false,
             home: _onboardingCompleted == null
                 ? const Scaffold(
                     body: Center(child: CircularProgressIndicator()),

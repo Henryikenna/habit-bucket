@@ -166,12 +166,15 @@ class WeeklyView extends ConsumerWidget {
                   habitFrequency: getHabitFrequencyEnum(
                     habitFrequency: habit.frequency,
                   ),
-                  onMenuTap: () {
+                  onEditTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => EditHabitScreen(habitId: habit.id),
                       ),
                     );
+                  },
+                  onDeleteTap: () {
+                    
                   },
                   onToggle: () async {
                     final repo = ref.read(localCompletionRepoProvider);

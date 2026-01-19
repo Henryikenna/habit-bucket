@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:habit_bucket/providers/notification_providers.dart';
 import 'package:habit_bucket/providers/providers.dart';
 import 'package:habit_bucket/providers/theme_controller_provider.dart';
 import 'package:habit_bucket/theme/theme_controller.dart';
@@ -146,6 +147,39 @@ class SettingsScreen extends ConsumerWidget {
                             profile.lastName,
                           )
                         : null,
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Notifications Section
+                  const Text(
+                    "Notifications",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 8),
+
+                  ListTile(
+                    title: const Text('Test Notification'),
+                    subtitle: const Text('Send a test notification now'),
+                    trailing: const Icon(Icons.notifications_active),
+                    onTap: () async {
+                      try {
+                        await ref.read(notificationServiceProvider).showTestNotification();
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Test notification sent! Check your notification tray.'),
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error: $e')),
+                          );
+                        }
+                      }
+                    },
                   ),
 
                   const SizedBox(height: 24),

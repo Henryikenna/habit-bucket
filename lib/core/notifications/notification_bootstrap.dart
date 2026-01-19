@@ -25,16 +25,30 @@ class _NotificationBootstrapState extends ConsumerState<NotificationBootstrap> {
     if (_done) return;
     _done = true;
 
-    await initLocalTimeZone();
+    print('🔔 [NotificationBootstrap] Initializing notification system...');
 
-    final service = ref.read(notificationServiceProvider);
-    await service.init();
-    await service.requestPermissionIfNeeded();
+    try {
+      await initLocalTimeZone();
+      print('   ✅ Timezone initialized');
 
-    // v1: reschedule on app start
-    final repo = ref.read(localHabitRepoProvider);
-    final habits = await repo.getAllNonDeletedHabits(); // add this method (below)
-    await service.rescheduleAllDaily(habits);
+      final service = ref.read(notificationServiceProvider);
+      await service.init();
+      print('   ✅ Notification plugin initialized');
+
+      await service.requestPermissionIfNeeded();
+      print('   ✅ Permission requested');
+
+      // v1: reschedule on app start
+      final repo = ref.read(localHabitRepoProvider);
+      final habits = await repo.getAllNonDeletedHabits();
+      print('   📋 Found ${habits.length} habits to schedule');
+
+      await service.rescheduleAllDaily(habits);
+      print('   ✅ All habits scheduled');
+    } catch (e, stack) {
+      print('   ❌ Error during notification init: $e');
+      print('   Stack: $stack');
+    }
   }
 
   @override

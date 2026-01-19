@@ -14,7 +14,9 @@ class HabitWidget extends StatelessWidget {
   final String title;
   final HabitFrequency habitFrequency;
   final int streakCount;
-  final VoidCallback? onMenuTap;
+  // final VoidCallback? onMenuTap;
+  final VoidCallback onEditTap;
+  final VoidCallback onDeleteTap;
 
   const HabitWidget({
     super.key,
@@ -23,8 +25,7 @@ class HabitWidget extends StatelessWidget {
     required this.title,
     required this.habitFrequency,
     required this.onToggle,
-    required this.streakCount,
-    this.onMenuTap,
+    required this.streakCount, required this.onEditTap, required this.onDeleteTap,
   });
 
   @override
@@ -141,34 +142,63 @@ class HabitWidget extends StatelessWidget {
                     ),
                   ),
 
-                  if (onMenuTap != null) ...[
-                    8.spaceW,
-                    GestureDetector(
-                      onTap: onMenuTap,
-                      child: Container(
-                        height: 28,
-                        width: 28,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Theme.of(context).colorScheme.outline,
+                  // if (onMenuTap != null) ...[
+                  8.spaceW,
+                  PopupMenuButton(
+                    // onTap: onMenuTap,
+                    elevation: 0,
+                    itemBuilder: (context) {
+                      return [
+                        PopupMenuItem(
+                          onTap: onEditTap,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.edit),
+                              8.spaceW,
+                              Text("Edit"),
+                            ],
                           ),
-                          borderRadius: BorderRadius.circular(40),
-                          color: Colors.transparent,
                         ),
-                        child: Center(
-                          child: FaIcon(
-                            FontAwesomeIcons.ellipsisVertical,
-                            size: 14,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacityFactor(.5),
+                        PopupMenuItem(
+                          onTap: onDeleteTap,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.delete, color: Colors.red),
+                              8.spaceW,
+                              Text(
+                                "Delete",
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ],
                           ),
+                        ),
+                      ];
+                    },
+                    child: Container(
+                      height: 28,
+                      width: 28,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.outline,
+                        ),
+                        borderRadius: BorderRadius.circular(40),
+                        color: Colors.transparent,
+                      ),
+                      child: Center(
+                        child: FaIcon(
+                          FontAwesomeIcons.ellipsisVertical,
+                          size: 14,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacityFactor(.5),
                         ),
                       ),
                     ),
-                  ],
+                  ),
                 ],
+                // ],
               ),
             ],
           ),
