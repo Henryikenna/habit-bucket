@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:habit_bucket/models/bottom_nav_widget_model.dart';
+import 'package:habit_bucket/screens/ad_wall/ad_wall_screen.dart';
 import 'package:habit_bucket/screens/habits/habits_screen.dart';
 import 'package:habit_bucket/screens/settings/settings_screen.dart';
 import 'package:habit_bucket/screens/stats/stats_screen.dart';
 import 'package:habit_bucket/utils/opacity.dart';
 
 class BottomNav extends StatefulWidget {
-
   const BottomNav({super.key});
 
   @override
@@ -33,6 +33,11 @@ class _BottomNavState extends State<BottomNav> {
         name: "Stats",
         icon: FaIcon(FontAwesomeIcons.chartLine),
         widget: StatsScreen(),
+      ),
+      const BottomNavWidgetModel(
+        name: "Ad Wall",
+        icon: FaIcon(FontAwesomeIcons.rectangleAd),
+        widget: AdWallScreen(),
       ),
       BottomNavWidgetModel(
         name: "Settings",
@@ -62,25 +67,24 @@ class _BottomNavState extends State<BottomNav> {
       //       ),
       //     ],
       //   ),
-
       extendBody: false,
-  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-  body: widgetsList[currentIndex].widget,
-  bottomNavigationBar: Container(
-    padding: const EdgeInsets.symmetric(vertical: 8),
-    decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.surface,
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacityFactor(
-            Theme.of(context).brightness == Brightness.dark ? 0.18 : 0.06,
-          ),
-          blurRadius: 20,
-          offset: const Offset(0, -4),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: widgetsList[currentIndex].widget,
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacityFactor(
+                Theme.of(context).brightness == Brightness.dark ? 0.18 : 0.06,
+              ),
+              blurRadius: 20,
+              offset: const Offset(0, -4),
+            ),
+          ],
         ),
-      ],
-    ),
         child: BottomNavigationBar(
           currentIndex: currentIndex,
           onTap: (index) => setState(() => currentIndex = index),
@@ -90,8 +94,10 @@ class _BottomNavState extends State<BottomNav> {
           // selectedItemColor: Theme.of(context).colorScheme.primary,
           // unselectedItemColor: Colors.grey.shade400,
           selectedItemColor: Theme.of(context).colorScheme.primary,
-      unselectedItemColor: Theme.of(context).colorScheme.onSurface.withOpacityFactor(0.45),
-     
+          unselectedItemColor: Theme.of(
+            context,
+          ).colorScheme.onSurface.withOpacityFactor(0.45),
+
           selectedFontSize: 12,
           unselectedFontSize: 12,
           items: widgetsList

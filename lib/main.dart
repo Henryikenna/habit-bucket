@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:habit_bucket/core/notifications/notification_bootstrap.dart';
 import 'package:habit_bucket/providers/theme_controller_provider.dart';
 import 'package:habit_bucket/screens/auth/auth_gate.dart';
@@ -18,6 +21,8 @@ Future<void> main() async {
     url: dotenv.env['SUPABASE_URL']!,
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
+
+  unawaited(MobileAds.instance.initialize());
 
   runApp(ProviderScope(child: MyApp()));
 }
@@ -71,9 +76,7 @@ class _MyAppState extends ConsumerState<MyApp> {
                     body: Center(child: CircularProgressIndicator()),
                   )
                 : _onboardingCompleted!
-                ? NotificationBootstrap(
-                    child: AuthGate(),
-                  )
+                ? NotificationBootstrap(child: AuthGate())
                 : const OnboardingScreen(),
           );
         },
