@@ -11,6 +11,7 @@ import 'package:habit_bucket/providers/providers.dart';
 import 'package:habit_bucket/providers/stats_providers.dart';
 import 'package:habit_bucket/providers/streak_display_provider.dart';
 import 'package:habit_bucket/providers/undo_lock_provider.dart';
+import 'package:habit_bucket/providers/notification_providers.dart';
 import 'package:habit_bucket/screens/habits/edit_habit_screen.dart';
 import 'package:habit_bucket/screens/habits/widgets/habit_widget.dart';
 import 'package:habit_bucket/utils/opacity.dart';
@@ -149,7 +150,7 @@ class DailyView extends ConsumerWidget {
                     // shrinkWrap: true,
                     padding: EdgeInsets.only(bottom: 80),
                     itemBuilder: (context, index) {
-                      final habit = habitList[index];
+                      final habit = habitList.reversed.toList()[index];
                       final now = DateTime.now();
 
                       final key = periodKeyForHabit(
@@ -199,7 +200,39 @@ class DailyView extends ConsumerWidget {
                           );
                           // show
                         },
-                        onDeleteTap: () {},
+                        onDeleteTap: () async {
+                          final confirmed = await showDialog<bool>(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Delete Habit'),
+                              content: Text(
+                                'Are you sure you want to delete "${habit.title}"?',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(context, false),
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, true),
+                                  child: const Text(
+                                    'Delete',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                          if (confirmed == true) {
+                            await ref
+                                .read(localHabitRepoProvider)
+                                .softDeleteHabit(habit.id);
+                            await ref
+                                .read(notificationServiceProvider)
+                                .cancelHabit(habit);
+                          }
+                        },
                         onToggle: () async {
                           final repo = ref.read(localCompletionRepoProvider);
                           final locks = ref.read(

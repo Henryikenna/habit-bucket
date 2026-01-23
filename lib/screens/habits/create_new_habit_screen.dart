@@ -266,6 +266,24 @@ class _CreateNewHabitScreenState extends ConsumerState<CreateNewHabitScreen>
         HabitFrequency.monthly => 'monthly',
       };
 
+      // Check if limit reached
+      final currentCount = await ref
+          .read(localHabitRepoProvider)
+          .countActiveHabitsByFrequency(freqStr);
+      if (currentCount >= 10) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'You can only have 10 $freqStr habits. Delete one to add more.',
+              ),
+            ),
+          );
+          setState(() => _isCreatingHabit = false);
+        }
+        return;
+      }
+
       // Reminder rules
       final reminderEnabled =
           true; // you don’t currently have a disable toggle in UI
@@ -327,13 +345,13 @@ class _CreateNewHabitScreenState extends ConsumerState<CreateNewHabitScreen>
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Hero(
         tag: "new-habit-fab",
-        child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.all(16),
-                child: Row(
+        child: Material(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          child: SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                Row(
                   children: [
                     GestureDetector(
                       onTap: () => Navigator.of(context).pop(),
@@ -354,162 +372,143 @@ class _CreateNewHabitScreenState extends ConsumerState<CreateNewHabitScreen>
                       ),
                     ),
                     16.spaceW,
-                    Text(
-                      'Create New Habit',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onSurface,
+                    Expanded(
+                      child: Text(
+                        'Create New Habit',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                     ),
                   ],
                 ),
-              ), // 24.spaceH,
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Habit name",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          // fontFamily: 'Manrope',
-                        ),
-                      ),
-                      4.spaceH,
-                      AppInput(
-                        controller: _habitNameController,
-                        hintText: "Enter habit name",
-                      ),
-                      16.spaceH,
-                      Text(
-                        "Frequency",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          // fontFamily: 'Manrope',
-                        ),
-                      ),
-                      4.spaceH,
-                      _buildFrequencySelector(),
-                      16.spaceH,
-                      Text(
-                        "Reminder",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          // fontFamily: 'Manrope',
-                        ),
-                      ),
-                      8.spaceH,
+                24.spaceH,
+                Text(
+                  "Habit name",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    // fontFamily: 'Manrope',
+                  ),
+                ),
+                4.spaceH,
+                AppInput(
+                  controller: _habitNameController,
+                  hintText: "Enter habit name",
+                ),
+                16.spaceH,
+                Text(
+                  "Frequency",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    // fontFamily: 'Manrope',
+                  ),
+                ),
+                4.spaceH,
+                _buildFrequencySelector(),
+                16.spaceH,
+                Text(
+                  "Reminder",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    // fontFamily: 'Manrope',
+                  ),
+                ),
+                8.spaceH,
 
-                      Container(
-                          padding: EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surface,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: Theme.of(context).colorScheme.outline,
+                Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      FaIcon(
+                        FontAwesomeIcons.shuffle,
+                        color: HabitBucketColors.mainPurple,
+                        size: 20,
+                      ),
+                      12.spaceW,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Random reminder',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                             ),
-                          ),
-                          child: Row(
+                            2.spaceH,
+                            Text(
+                              'Get reminded at a random time during the day',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withOpacityFactor(0.55),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Switch(
+                        value: _randomReminders,
+                        onChanged: _toggleRandomReminders,
+                        activeThumbColor: HabitBucketColors.mainPurple,
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Animated Reminder Settings
+                AnimatedBuilder(
+                  animation: _reminderHeightAnimation,
+                  builder: (context, child) {
+                    return ClipRect(
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        heightFactor: _reminderHeightAnimation.value,
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: Column(
                             children: [
-                              FaIcon(
-                                FontAwesomeIcons.shuffle,
-                                color: HabitBucketColors.mainPurple,
-                                size: 20,
-                              ),
-                              12.spaceW,
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Random reminder',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.onSurface,
-                                      ),
-                                    ),
-                                    2.spaceH,
-                                    Text(
-                                      'Get reminded at a random time during the day',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface
-                                            .withOpacityFactor(0.55),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Switch(
-                                value: _randomReminders,
-                                onChanged: _toggleRandomReminders,
-                                activeThumbColor: HabitBucketColors.mainPurple,
+                              20.spaceH,
+                              AnimatedBuilder(
+                                animation: _frequencyOpacityAnimation,
+                                builder: (context, child) {
+                                  return Opacity(
+                                    opacity: _frequencyOpacityAnimation.value,
+                                    child: _buildSelectionContent(),
+                                  );
+                                },
                               ),
                             ],
                           ),
                         ),
-
-                        // Animated Reminder Settings
-                        AnimatedBuilder(
-                          animation: _reminderHeightAnimation,
-                          builder: (context, child) {
-                            return ClipRect(
-                              child: Align(
-                                alignment: Alignment.topCenter,
-                                heightFactor: _reminderHeightAnimation.value,
-                                child: SizedBox(
-                                  width: double.infinity,
-                                  child: Column(
-                                    children: [
-                                      20.spaceH,
-                                      AnimatedBuilder(
-                                        animation: _frequencyOpacityAnimation,
-                                        builder: (context, child) {
-                                          return Opacity(
-                                            opacity: _frequencyOpacityAnimation
-                                                .value,
-                                            child: _buildSelectionContent(),
-                                          );
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      40.spaceH,
-                    ],
-                  ),
+                      ),
+                    );
+                  },
                 ),
-              ),
-
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    16.spaceH,
-                    AppButton(
-                      label: "Create Habit",
-                      onPressed: _createHabit,
-                      isLoading: _isCreatingHabit,
-                    ),
-                  ],
+                40.spaceH,
+                AppButton(
+                  label: "Create Habit",
+                  onPressed: _createHabit,
+                  isLoading: _isCreatingHabit,
                 ),
-              ),
-            ],
+                16.spaceH,
+              ],
+            ),
           ),
         ),
       ),

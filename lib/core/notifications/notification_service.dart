@@ -116,8 +116,7 @@ class NotificationService {
             priority: Priority.defaultPriority,
           ),
         ),
-        // v1: avoid exact-alarm permission complexity on Android 14+
-        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         // uiLocalNotificationDateInterpretation:
         //     UILocalNotificationDateInterpretation.absoluteTime,
         payload: 'habit:${h.id}',

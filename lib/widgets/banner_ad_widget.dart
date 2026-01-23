@@ -7,9 +7,9 @@ class BannerAdWidget extends StatefulWidget {
   final AdSize adSize;
   final String adUnitId = Platform.isAndroid
       // Use this ad unit on Android...
-      ? 'ca-app-pub-4398584928051251~6350263182'
+      ? 'ca-app-pub-4398584928051251/1053831756'
       // ... or this one on iOS.
-      : 'ca-app-pub-4398584928051251~9993994728';
+      : 'ca-app-pub-4398584928051251/1016310919';
 
   BannerAdWidget({super.key, this.adSize = AdSize.banner});
 
@@ -64,11 +64,13 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: SizedBox(
-        width: widget.adSize.width.toDouble(),
-        height: widget.adSize.height.toDouble(),
-        child: _bannerAd == null ? const SizedBox() : AdWidget(ad: _bannerAd!),
-      ),
+      child: _bannerAd == null
+          ? CircularProgressIndicator()
+          : SizedBox(
+              width: widget.adSize.width.toDouble(),
+              height: widget.adSize.height.toDouble(),
+              child: AdWidget(ad: _bannerAd!),
+            ),
     );
   }
 }

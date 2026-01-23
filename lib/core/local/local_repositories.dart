@@ -86,6 +86,16 @@ class LocalHabitRepository {
       db.habits,
     )..where((t) => t.id.equals(id))).getSingleOrNull();
   }
+
+  Future<int> countActiveHabitsByFrequency(String frequency) async {
+    final habits = await (db.select(db.habits)
+          ..where((t) =>
+              t.archivedAt.isNull() &
+              t.deleted.equals(false) &
+              t.frequency.equals(frequency)))
+        .get();
+    return habits.length;
+  }
 }
 
 class LocalCompletionRepository {

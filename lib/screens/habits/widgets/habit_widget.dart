@@ -25,7 +25,9 @@ class HabitWidget extends StatelessWidget {
     required this.title,
     required this.habitFrequency,
     required this.onToggle,
-    required this.streakCount, required this.onEditTap, required this.onDeleteTap,
+    required this.streakCount,
+    required this.onEditTap,
+    required this.onDeleteTap,
   });
 
   @override
@@ -112,7 +114,9 @@ class HabitWidget extends StatelessWidget {
                       border: Border.all(
                         color: isStreakActivated
                             ? HabitBucketColors.pink
-                            : Theme.of(context).colorScheme.outline,
+                            : Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withOpacityFactor(.2),
                       ),
                       borderRadius: BorderRadius.circular(40),
                       color: Theme.of(context).colorScheme.surface,
@@ -126,7 +130,9 @@ class HabitWidget extends StatelessWidget {
                           size: 12,
                           color: isStreakActivated
                               ? HabitBucketColors.pink
-                              : Theme.of(context).colorScheme.outline,
+                              : Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withOpacityFactor(.2),
                         ),
                         6.spaceW,
                         Text(
@@ -135,7 +141,9 @@ class HabitWidget extends StatelessWidget {
                             fontSize: 12,
                             color: isStreakActivated
                                 ? HabitBucketColors.pink
-                                : Theme.of(context).colorScheme.outline,
+                                : Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface.withOpacityFactor(.2),
                           ),
                         ),
                       ],

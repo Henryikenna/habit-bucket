@@ -11,6 +11,7 @@ import 'package:habit_bucket/providers/providers.dart';
 import 'package:habit_bucket/providers/stats_providers.dart';
 import 'package:habit_bucket/providers/streak_display_provider.dart';
 import 'package:habit_bucket/providers/undo_lock_provider.dart';
+import 'package:habit_bucket/providers/notification_providers.dart';
 import 'package:habit_bucket/screens/habits/edit_habit_screen.dart';
 import 'package:habit_bucket/screens/habits/widgets/habit_widget.dart';
 import 'package:habit_bucket/utils/opacity.dart';
@@ -100,7 +101,58 @@ class MonthlyView extends ConsumerWidget {
     final groupedHabits = _groupHabitsByDay(now);
     final sortedDays = groupedHabits.keys.toList()..sort();
 
-    return ListView.separated(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: 4,
+            horizontal: 16,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Monthly Habits",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+              RichText(
+                text: TextSpan(
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: "${habitList.length}",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacityFactor(.95),
+                      ),
+                    ),
+                    const TextSpan(text: "/"),
+                    TextSpan(
+                      text: "10",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        8.spaceH,
+        Expanded(
+          child: ListView.separated(
       padding: EdgeInsets.only(bottom: 80, left: 8, right: 8, top: 8),
       itemCount: sortedDays.length,
       separatorBuilder: (context, index) => 24.spaceH,
@@ -140,8 +192,8 @@ class MonthlyView extends ConsumerWidget {
             ),
             8.spaceH,
 
-            // Habits for this day
-            ...dayHabits.map((habit) {
+            // Habits for this day (most recently created first)
+            ...dayHabits.reversed.map((habit) {
               final key = periodKeyForHabit(
                 habit: habit,
                 now: now,
@@ -187,8 +239,37 @@ class MonthlyView extends ConsumerWidget {
                       ),
                     );
                   },
-                  onDeleteTap: () {
-                    
+                  onDeleteTap: () async {
+                    final confirmed = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Delete Habit'),
+                        content: Text(
+                          'Are you sure you want to delete "${habit.title}"?',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: const Text(
+                              'Delete',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirmed == true) {
+                      await ref
+                          .read(localHabitRepoProvider)
+                          .softDeleteHabit(habit.id);
+                      await ref
+                          .read(notificationServiceProvider)
+                          .cancelHabit(habit);
+                    }
                   },
                   onToggle: () async {
                     final repo = ref.read(localCompletionRepoProvider);
@@ -248,6 +329,9 @@ class MonthlyView extends ConsumerWidget {
           ],
         );
       },
+          ),
+        ),
+      ],
     );
   }
 }
