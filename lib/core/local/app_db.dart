@@ -87,6 +87,14 @@ class AppDb extends _$AppDb {
   @override
   int get schemaVersion => 4;
 
+  /// Clears all local data (used on logout)
+  Future<void> clearAllData() async {
+    await delete(habits).go();
+    await delete(completions).go();
+    await delete(profile).go();
+    await delete(syncState).go();
+  }
+
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onCreate: (m) async {

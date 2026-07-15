@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:habit_bucket/providers/notification_providers.dart';
 import 'package:habit_bucket/providers/providers.dart';
 import 'package:habit_bucket/providers/theme_controller_provider.dart';
+import 'package:habit_bucket/screens/auth/sign_in_screen.dart';
 import 'package:habit_bucket/theme/theme_controller.dart';
 import 'package:habit_bucket/utils/spacing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -214,6 +215,22 @@ class SettingsScreen extends ConsumerWidget {
                       ],
                     ),
                   ),
+
+                  const SizedBox(height: 24),
+
+                  // Account Section
+                  const Text(
+                    "Account",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 8),
+
+                  ListTile(
+                    title: const Text('Log out'),
+                    subtitle: const Text('Sign out and clear local data'),
+                    trailing: const Icon(Icons.logout, color: Colors.red),
+                    onTap: () => _showLogoutConfirmation(context, ref),
+                  ),
                 ],
               );
             },
@@ -221,5 +238,57 @@ class SettingsScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  void _showLogoutConfirmation(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Log out'),
+        content: const Text(
+          'Are you sure you want to log out? All local data will be cleared.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(dialogContext).pop();
+              await _performLogout(context, ref);
+            },
+            child: const Text(
+              'Log out',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _performLogout(BuildContext context, WidgetRef ref) async {
+    try {
+      // Clear local data
+      await ref.read(appDbProvider).clearAllData();
+
+      // Sign out from Supabase
+      await Supabase.instance.client.auth.signOut();
+
+      if (context.mounted) {
+        // Navigate to sign in screen and clear navigation stack
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const SignInScreen()),
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to log out: $e')),
+        );
+      }
+    }
   }
 }
